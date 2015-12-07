@@ -1,0 +1,168 @@
+.bg-main {
+	color: #ecf0f1;
+	background-color: #34495e;
+}
+
+.bg-main a:link {
+	color: #ecf0f1;
+}
+
+.bg-main a:visited,
+.bg-main a:hover,
+.bg-main a:active {
+	font-weight: bold;
+	color: inherit;
+	text-decoration: none;
+}
+
+.btn-default {
+	color: #ecf0f1;
+	background-color: #34495e;
+	border: none;
+}
+
+.btn-default:hover {
+	color: #ecf0f1;
+	background-color: #222f3d;
+}
+
+.btn-default:active,
+.btn-default:focus {
+	color: #ecf0f1;
+	background-color: #2b3c4e;
+}
+
+.btn-primary {
+	color: #ecf0f1;
+	background-color: #16a085;
+	border: none;
+}
+
+.btn-primary:hover {
+	color: #ecf0f1;
+	background-color: #107360;
+}
+
+.btn-primary:active,
+.btn-primary:focus {
+	color: #ecf0f1;
+	background-color: #138a72;
+}
+
+.bg-transparent {
+	background-color: transparent !important;
+}
+
+@font-face {
+	font-family: 'NanumBarunGothic';
+	src: url('/resources/fonts/NanumBarunGothic.woff') format("woff"), url('/resources/fonts/NanumBarunGothic.eot?#iefix') format("embedded-opentype");
+}
+
+@font-face {
+	font-family: 'NanumGothic';
+	src: url('/resources/fonts/NanumGothic.woff') format("woff"), url('/resources/fonts/NanumGothic.eot?#iefix') format("embedded-opentype");
+}
+
+@font-face {
+	font-family: 'Ubuntu';
+	src: url('/resources/fonts/Ubuntu.woff') format("woff"), url('/resources/fonts/Ubuntu.eot?#iefix') format("embedded-opentype");
+}
+
+@font-face {
+	font-family: 'Noto Sans Korean';
+	src: url('/resources/fonts/NotoSans.woff') format("woff"), url('/resources/fonts/NotoSans.eot?#iefix') format("embedded-opentype");
+}
+
+@font-face {
+	font-family: 'NanumGothicCoding';
+	src: url('/resources/fonts/NanumGothicCoding.woff') format("woff"), url('/resources/fonts/NanumGothicCoding.eot?#iefix') format("embedded-opentype");
+}
+
+.fonted {
+	font-family: '나눔바른고딕', 'NanumBarunGothic', '나눔고딕', 'NanumGothic', 'InterparkGothic', '인터파크고딕', 'Open Sans', '함초롬돋움', '서울남산체', 'Noto Sans Korean', '본고딕', 'Apple SD Gothic Neo', 'KoPubDotum Medium', '맑은고딕', 'Malgun Gothic', arial, sans-serif;
+}
+
+.full {
+	padding: 0;
+	margin: 0;
+}
+
+.nav-toggle{
+	border: none;
+    padding: 9px 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+	border-radius: 5px;
+    cursor: inherit;
+}
+
+.nav-toggle:hover{
+    background: #00C0A0 !important;
+}
+
+.navbar-inverse{
+	border: 0;
+}
+
+.navbar-brand{
+	color: #00C0A0 !important;
+}
+
+.album-cell{
+	margin: 8px;
+	width: 200px;
+	height: 250px;
+}
+
+.list-group-item{
+	width: 100%;
+	font-size: 24px;
+}
+
+.bgm-music{
+	margin: 8px;
+	margin-right: 16px;
+	color: #00C0A0;
+	font-size: 24px;
+}
+
+#contents{
+	position: relative;
+	margin-left: 50px;
+	height: calc(1vh - 100px);
+}
+
+#playpause{
+	font-size: 50px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+aside{
+	float: right;
+	height: 100%;
+	width: 30%;
+}
+
+footer{
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 100px;
+}
+
+footer ul{
+	font-size: 25px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	display: inline-block;
+}
+
+footer ul li{
+	display: inline;
+}
+
+footer ul li a{
+	vertical-align: bottom;
+	font-weight: normal !important;
+}
