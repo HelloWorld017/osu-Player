@@ -1,7 +1,3 @@
-<?php
-	header('Access-Control-Allow-Origin: http://bloodcat.com');
-?>
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -37,9 +33,9 @@
                 </div>
 
                 <div class="navbar-header navbar-right">
-					<form role="form" class="form-inline">
+					<form role="form" class="form-inline" onsubmit="search(); return false;">
 						<div class="form-group">
-							<input type="text" class="form-control" placeholder="Search musics!">
+							<input name="q" type="text" class="form-control" placeholder="Search musics!">
 							<input name="mod" type="hidden" value="json">
 							<input name="m" type="hidden" value="s">
 							<input name="s" type="hidden" value="title">
@@ -61,7 +57,6 @@
 			<aside>
 				<ul id="playlist" class="list-group">
 					<h1>Playlist</h1>
-					<li type="button" class="list-group-item"><span class="fa fa-music bgm-music"></span>List</li>
 				</ul>
 			</aside>
 

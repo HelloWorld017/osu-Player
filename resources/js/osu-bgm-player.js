@@ -1,17 +1,20 @@
-const INFO_URL = "http://bloodcat.com/osu/";
+//const INFO_URL = "http://bloodcat.com/osu/";
+const INFO_URL = "/search_bgm.php"
 const IMG_URL = "//b.ppy.sh/thumb/{0}l.jpg"
 
 var queue = [];
 var pointer = 0;
-var contents = $('#contents');
-var playlist = $('#playlist');
-var playpause = $('#playpause');
+var contents = null;
+var playlist = null;
+var playpause = null;
 var isPaused = true;
 var audio;
+var nopic = true;
+
 var searchTemplate =
 	$(document.createElement('div'))
 		.addClass('album-cell')
-		.append($(document.createElement('img')).addClass('album-cover').append(
+		.append($(document.createElement('div')).addClass('album-cover').append(
 			$(document.createElement('div')).addClass('album-cover-hover').append(
 				$(document.createElement('span')).addClass('fa fa-play-circle-o')
 			)
@@ -19,14 +22,44 @@ var searchTemplate =
 		.append($(document.createElement('h1')).addClass('album-title'))
 		.append($(document.createElement('h2')).addClass('album-author'));
 
-function init(){
+var playlistTemplate =
+	$(document.createElement('li'))
+		.attr('type', 'button').addClass('list-group-item')
+		.append($(document.createElement('span')).addClass('fa fa-music bgm-music'))
+		.append($(document.createElement('p')).addClass('playlist-text'));
+
+
+$(document).ready(function(){
+	contents = $('#contents');
+	playlist = $('#playlist');
+	playpause = $('#playpause');
+
 	audio = document.createElement("audio");
 
 	audio.addEventListener("ended", function(){
 		nextTrack();
 	});
+	nopic = getFlag("nopic");
+});
 
-	resize();
+function setFlag(flagName, flagValue){
+    var cookieValue = "no";
+    if(flagValue) cookieValue = "yes";
+    document.cookie = flagName + "=" + cookieValue + ";";
+}
+
+function getFlag(flagName) {
+    flagName += "=";
+    var cookieData = document.cookie;
+    var start = cookieData.indexOf(flagName);
+    var flagValue = '';
+    if(start != -1){
+        start += flagName.length;
+        var end = cookieData.indexOf(';', start);
+        if(end == -1)end = cookieData.length;
+        flagValue = cookieData.substring(start, end);
+    }
+    return (flagValue === "yes");
 }
 
 function prevTrack(){
@@ -101,7 +134,7 @@ function notifyStop(){
 function search(){
 	$.ajax({
 		url: INFO_URL,
-		type: "get",
+		type: "GET",
 		data: $("form").serialize(),
 		success: function(data){
 			contents.empty();
@@ -120,18 +153,19 @@ function search(){
 }
 
 function addToSearchlist(id, title, artist){
-	var resultView = $.extend(true, {}, searchTemplate);
-	var img = resultView.children('.album-cover');
-	img.src = IMG_URL.replace("{0}", id);
-	img.data('meta', {
+	var resultView = searchTemplate.clone();
+
+	var src = "http://placehold.it/160x120";
+	if(!nopic) src = IMG_URL.replace("{0}", id);
+
+	resultView.children('.album-cover').data('meta', {
 		id: id,
 		title: title,
 		author: artist
-	});
-	img.click(function(){
+	}).on('click', function(){
 		var meta = $(this).data('meta');
 		addToPlaylist(meta.id, meta.title, meta.artist);
-	});
+	}).css('background', 'url("' + src + '")');
 
 	resultView.children('.album-title')[0].innerHTML = title;
 	resultView.children('.album-author')[0].innerHTML = artist;
@@ -143,15 +177,38 @@ function error(text){
 	alert(text);
 }
 
-function is404(url){
-	var http = new XMLHttpRequest();
+function is404(url, callback){
+	$.ajax({
+		url: url,
+		type: "GET",
+		success: function(){
+			callback(false);
+		},
+
+		error: function(){
+			callback(true);
+		}
+	})
+	/*var http = new XMLHttpRequest();
 	http.open('HEAD', url, false);
 	http.send();
-	return (http.status === 404);
+	return (http.status === 404);*/
 }
 
 function addToPlaylistFromTemplate(data){
+	var listView = playlistTemplate.clone();
 
+	var playlistText = listView.children('.playlist-text')[0];
+	playlistText.innerHTML =
+		'<span class="list-title">' +
+		 	data.title +
+		'</span>' +
+		'<br>' +
+		'<span class="list-author">' +
+			data.artist +
+		'</span>';
+	listView.data('id', data.id);
+	playlist.append(resultView);
 }
 
 function addToPlaylist(id, title, artist){
@@ -177,17 +234,28 @@ function addToPlaylist(id, title, artist){
 				//audio: null
 			};
 
-			if(jsonData.hasOwnProperty('image')) data.image = jsonData.image;
+			if(jsonData.hasOwnProperty('image') && jsonData.image !== null) data.image = jsonData.image;
 
-			if(is404(data.music)){
-				error("Couldn't get music file from osz.");
-				return;
-			}
+			is404(data.music, function(musicErr){
+				if(musicErr){
+					error("Couldn't get music file from osz.");
+					return;
+				}
 
-			if(is404(data.image)) data.image = null;
+				if(data.image !== null){
+					is404(data.image, function(imageErr){
+						if(imageErr){
+							data.image = null;
+						}
 
-			addToPlaylistFromTemplate(data);
-			queue.push(data);
+						addToPlaylistFromTemplate(data);
+						queue.push(data);
+					});
+				}else{
+					addToPlaylistFromTemplate(data);
+					queue.push(data);
+				}
+			});
 		},
 
 		error: function(){
@@ -201,9 +269,5 @@ function removeFromPlaylist(id){
 		return v.id !== id;
 	});
 
-	playlist.children('li[data-id=' + "id"']').remove();
-}
-
-function resize(){
-	$('#playlist, #section-right').css("height", window.innerHeight - 45 + "px");
+	playlist.children('li[data-id="' + id + '"]').remove();
 }

@@ -111,23 +111,37 @@
 .album-cell{
 	margin: 8px;
 	width: 200px;
-	height: 250px;
+	min-height: 250px;
+	display:inline-block;
+	vertical-align: top;
 }
 
 .album-cover{
-
+	width: 160px;
+	height: 120px;
 }
 
 .album-cover-hover{
+	width: 100%;
+	height: 100%;
+	line-height: 120px;
+	text-align: center;
+	font-size: 3rem;
+	opacity: 0;
+	animation: opacity 0.5s;
+}
 
+.album-cover:hover .album-cover-hover{
+	opacity: 0.6;
 }
 
 .album-title{
-
+	font-size: 3rem;
+	font-weight: bold;
 }
 
 .album-author{
-	
+	font-size: 2rem;
 }
 
 .list-group-item{
@@ -144,8 +158,11 @@
 
 #contents{
 	position: relative;
+	display: inline-block;
 	margin-left: 50px;
-	height: calc(1vh - 100px);
+	width: 60%;
+	height: calc(100vh - 200px);
+	overflow-y: auto;
 }
 
 #playpause{
@@ -156,6 +173,7 @@
 
 aside{
 	float: right;
+	display: inline-block;
 	height: 100%;
 	width: 30%;
 }
