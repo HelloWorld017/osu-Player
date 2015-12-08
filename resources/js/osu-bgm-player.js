@@ -1,9 +1,23 @@
 const INFO_URL = "http://bloodcat.com/osu/";
+const IMG_URL = "//b.ppy.sh/thumb/{0}l.jpg"
 
 var queue = [];
 var pointer = 0;
-
+var contents = $('#contents');
+var playlist = $('#playlist');
+var playpause = $('#playpause');
+var isPaused = true;
 var audio;
+var searchTemplate =
+	$(document.createElement('div'))
+		.addClass('album-cell')
+		.append($(document.createElement('img')).addClass('album-cover').append(
+			$(document.createElement('div')).addClass('album-cover-hover').append(
+				$(document.createElement('span')).addClass('fa fa-play-circle-o')
+			)
+		))
+		.append($(document.createElement('h1')).addClass('album-title'))
+		.append($(document.createElement('h2')).addClass('album-author'));
 
 function init(){
 	audio = document.createElement("audio");
@@ -58,22 +72,6 @@ function play(){
 	}
 }
 
-function notifyPlay(){
-	document.getElementById("playpause").innerHTML = "Pause";
-	for(var queueId in queue){
-		if(!queue.hasOwnProperty(queueId)) continue;
-		if(queueId === pointer){
-			queue[queueId].li.childNodes[0].style.color = "#FFFFFF";
-		}else{
-			queue[queueId].li.childNodes[0].color = "#FF0080";
-		}
-	}
-}
-
-function notifyStop(){
-	$('#playpause').innerHTML = "Play";
-}
-
 function stop(){
 	if(!audio.paused){
 		audio.currentTime = 0;
@@ -88,93 +86,122 @@ function pause(){
 	notifyStop();
 }
 
+function notifyPlay(){
+	playpause.children('span').removeClass('fa-play-circle-o').addClass('fa-pause-circle-o');
+	playlist.removeClass('playing');
+	playlist.children('li[data-id=' + queue[pointer].id + ']').addClass('playing');
+	isPaused = false;
+}
+
+function notifyStop(){
+	playpause.children('span').removeClass('fa-pause-circle-o').addClass('fa-play-circle-o');
+	isPaused = true;
+}
+
 function search(){
 	$.ajax({
 		url: INFO_URL,
 		type: "get",
 		data: $("form").serialize(),
 		success: function(data){
-			var searchList = document.getElementById("searchlist");
-
-			while(searchList.firstChild){
-				searchList.removeChild(searchList.firstChild);
-			}
-
+			contents.empty();
 			var jsonArray = JSON.parse(data);
 
 			if(jsonArray === null || data === "[]"){
-				var list = document.createElement("li");
-				list.innerHTML = "Couldn't retrieve the data.<br>There are no beatmaps you've entered or the server is working abnormally.";
-				searchList.appendChild(list);
+				error("Couldn't retrieve the data.<br>There are no beatmaps you've entered or the server is working abnormally.");
 				return false;
 			}
 
-			for(var dataNum in jsonArray){
-				if(!jsonArray.hasOwnProperty(dataNum)) continue;
-
-				var a = document.createElement("a");
-
-				var id = jsonArray[dataNum]["id"].replace("'", "\\'");
-				var title = jsonArray[dataNum]["title"].replace("'", "\\'");
-				var artist = jsonArray[dataNum]["artist"].replace("'", "\\'");
-
-				a.innerHTML = jsonArray[dataNum]["artist"] + " - " + jsonArray[dataNum]["title"];
-				a.href = "javascript:addToPlaylist('" + id + "', '" + title + "', '" + artist + "')";
-
-				var li = document.createElement("li");
-				li.appendChild(a);
-
-				searchList.appendChild(li);
-			}
+			jsonArray.forEach(function(v){
+				addToSearchlist(v.id, v.title, v.artist);
+			});
 		}
 	});
 }
 
+function addToSearchlist(id, title, artist){
+	var resultView = $.extend(true, {}, searchTemplate);
+	var img = resultView.children('.album-cover');
+	img.src = IMG_URL.replace("{0}", id);
+	img.data('meta', {
+		id: id,
+		title: title,
+		author: artist
+	});
+	img.click(function(){
+		var meta = $(this).data('meta');
+		addToPlaylist(meta.id, meta.title, meta.artist);
+	});
+
+	resultView.children('.album-title')[0].innerHTML = title;
+	resultView.children('.album-author')[0].innerHTML = artist;
+
+	contents.append(resultView);
+}
+
+function error(text){
+	alert(text);
+}
+
+function is404(url){
+	var http = new XMLHttpRequest();
+	http.open('HEAD', url, false);
+	http.send();
+	return (http.status === 404);
+}
+
+function addToPlaylistFromTemplate(data){
+
+}
+
 function addToPlaylist(id, title, artist){
-	for(var queueId in queue){
-		if(!queue.hasOwnProperty(queueId)) continue;
-		if(queue[queueId].id === id){
-			return;
-		}
-	}
+	var alreadyAdded = false;
+
+	queue.forEach(function(v){
+		if(v.id === id) alreadyAdded = true;
+	});
+
+	if(alreadyAdded) return;
 
 	$.ajax({
 		url: "load_bgm.php?id=" + id,
 		success: function(data){
 			var jsonData = JSON.parse(data);
 
-			var a = document.createElement("a");
-			a.innerHTML = artist + " - " + title;
-			a.href = "javascript:removeFromPlaylist('" + id + "')";
-
-			var li = document.createElement("li");
-			li.appendChild(a);
-
-			var playlist = document.getElementById("playlist");
-			playlist.appendChild(li);
-
-			queue.push({
+			var data = {
 				id: id,
-				music: jsonData[0],
-				image: jsonData[1],
+				music: jsonData['audio'],
+				image: null,
 				title: title,
-				artist: artist,
-				li: li
-			});
+				artist: artist
+				//audio: null
+			};
+
+			if(jsonData.hasOwnProperty('image')) data.image = jsonData.image;
+
+			if(is404(data.music)){
+				error("Couldn't get music file from osz.");
+				return;
+			}
+
+			if(is404(data.image)) data.image = null;
+
+			addToPlaylistFromTemplate(data);
+			queue.push(data);
+		},
+
+		error: function(){
+			error("Couldn't get music file from osz.");
 		}
 	});
 }
 
 function removeFromPlaylist(id){
-	var playlist = document.getElementById("playlist");
-	for(var queueId in queue){
-		if(!queue.hasOwnProperty(queueId)) continue;
-		if(queue[queueId].id === id){
-			playlist.removeChild(queue[queueId].li);
-			queue.splice(queueId, 1);
-			break;
-		}
-	}
+	queue.filter(function(v){
+		return v.id !== id;
+	});
+
+	playlist.children('li[data-id=' + "id"']').remove();
 }
 
 function resize(){

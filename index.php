@@ -59,7 +59,7 @@
 			</div>
 
 			<aside>
-				<ul class="list-group">
+				<ul id="playlist" class="list-group">
 					<h1>Playlist</h1>
 					<li type="button" class="list-group-item"><span class="fa fa-music bgm-music"></span>List</li>
 				</ul>
@@ -73,9 +73,6 @@
 					<li>
 						<a id="playpause" href="javascript:play()"><span class="fa fa-play-circle-o"></span></a>
 					</li>
-					<!-- <li>
-						<a href="javascript:stop()"><span class="fa fa-stop-circle-o"></span></a>
-					</li> -->
 					<li>
 						<a href="javascript:nextTrack()"><span class="fa fa-chevron-right"></span></a>
 					</li>
