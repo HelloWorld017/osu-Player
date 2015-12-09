@@ -9,8 +9,10 @@ var playlist = null;
 var playpause = null;
 var currentTitle = null;
 var currentArtist = null;
+var progress = null;
 var isPaused = true;
 var audio;
+var preloadAudio;
 var nopic = true;
 
 var searchTemplate =
@@ -35,21 +37,28 @@ $(document).ready(function(){
 	contents = $('#contents');
 	playlist = $('#playlist');
 	playpause = $('#playpause');
-	currentTitle = $('current-title');
-	currentArtist = $('current-artist');
-
-	audio = document.createElement("audio");
-
-	audio.addEventListener("ended", function(){
-		nextTrack();
-	});
+	currentTitle = $('#current-title');
+	currentArtist = $('#current-artist');
 	nopic = getFlag("nopic");
 
-	$('#music-progress').slider({
+	progress = $('#music-progress').slider({
 		formatter: function(value) {
 			var sec = value % 60;
 			return Math.floor(value / 60) + ":" + ((sec.toString().length >= 2) ? sec : '0' + sec);
 		}
+	});
+
+	audio = $(document.createElement("audio"))
+		.on('ended', function(){
+			nextTrack();
+		}).on('timeupdate', function(){
+			progress.slider('setValue', Math.round(audio.currentTime));
+		}).on('canplaythrough', function(){
+			progress.slider('setAttribute', 'max', Math.round(audio.duration))
+		})[0];
+
+	progress.on('slide', function(){
+		audio.currentTime = progress.slider('getValue');
 	});
 });
 
@@ -102,7 +111,6 @@ function nextTrack(){
 
 	audio.src = queue[pointer].music;
 	audio.play();
-	notifyPlay();
 }
 
 function play(){
@@ -133,7 +141,10 @@ function pause(){
 function notifyPlay(){
 	playpause.children('span').removeClass('fa-play-circle-o').addClass('fa-pause-circle-o');
 	playlist.removeClass('playing');
-	playlist.children('li[data-id=' + queue[pointer].id + ']').addClass('playing');
+	playlist.children('li').filter(function(v){
+		return $(v).data('id') === queue[pointer].id;
+	}).addClass('playing');
+
 	currentTitle[0].innerHTML = queue[pointer].title;
 	currentArtist[0].innerHTML = queue[pointer].artist;
 	isPaused = false;
@@ -204,11 +215,20 @@ function is404(url, callback){
 	})
 }
 
-function addToPlaylistFromTemplate(data){
+function addToPlaylistPlaceholder(id){
 	var listView = playlistTemplate.clone();
 
-	var playlistText = listView.children('.playlist-text')[0];
-	playlistText.innerHTML =
+	listView.children('.playlist-text')[0].innerHTML =
+		'<span class="list-title">Adding your selected music. Plz wait for a sec!</span>';
+	listView.data('id', id);
+
+	playlist.append(listView);
+
+	return listView;
+}
+
+function addToPlaylistFromTemplate(listView, data){
+	listView.children('.playlist-text')[0].innerHTML =
 		'<span class="list-title">' +
 		 	data.title +
 		'</span>' +
@@ -216,8 +236,6 @@ function addToPlaylistFromTemplate(data){
 		'<span class="list-author">' +
 			data.artist +
 		'</span>';
-	listView.data('id', data.id);
-	playlist.append(listView);
 }
 
 function addToPlaylist(id, title, artist){
@@ -228,6 +246,8 @@ function addToPlaylist(id, title, artist){
 	});
 
 	if(alreadyAdded) return;
+
+	var view = addToPlaylistPlaceholder();
 
 	$.ajax({
 		url: "load_bgm.php?id=" + id,
@@ -246,6 +266,7 @@ function addToPlaylist(id, title, artist){
 
 			is404(data.music, function(musicErr){
 				if(musicErr){
+					view.remove();
 					error("Couldn't get music file from osz.");
 					return;
 				}
@@ -256,17 +277,18 @@ function addToPlaylist(id, title, artist){
 							data.image = null;
 						}
 
-						addToPlaylistFromTemplate(data);
+						addToPlaylistFromTemplate(view, data);
 						queue.push(data);
 					});
 				}else{
-					addToPlaylistFromTemplate(data);
+					addToPlaylistFromTemplate(view, data);
 					queue.push(data);
 				}
 			});
 		},
 
 		error: function(){
+			view.remove();
 			error("Couldn't get music file from osz.");
 		}
 	});
@@ -277,5 +299,7 @@ function removeFromPlaylist(id){
 		return v.id !== id;
 	});
 
-	playlist.children('li[data-id="' + id + '"]').remove();
+	playlist.children('li').filter(function(v){
+		return $(v).data('id') === id;
+	}).remove();
 }

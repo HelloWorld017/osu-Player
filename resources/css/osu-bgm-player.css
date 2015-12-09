@@ -158,10 +158,16 @@
 }
 
 .bgm-music{
+	position: relative;
+	top: -12px;
 	margin: 8px;
 	margin-right: 16px;
 	color: #00C0A0;
 	font-size: 24px;
+}
+
+.playlist-text{
+	display: inline-block;
 }
 
 .center-progress{
@@ -238,6 +244,14 @@
 
 #toggle-repeat, #toggle-random{
 	margin-right: 10px;
+}
+
+#m-progress .slider-selection{
+	background: #00C0A0;
+}
+
+#m-progress .slider-handle{
+	background: #16A085;
 }
 
 aside{

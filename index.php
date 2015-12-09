@@ -69,7 +69,7 @@
 				</ul>
 
 				<div class="center-progress">
-					<input id="music-progress" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="90" data-slider-step="1" data-slider-value="0"/>
+					<input id="music-progress" type="text" data-slider-id="m-progress" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="0" data-slider-handle="square"/>
 					<br>
 					<h1 id="current-title">osu!Player</h1>
 					<h2 id="current-artist">Add musics by searching!</h2>
