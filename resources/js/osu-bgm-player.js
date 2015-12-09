@@ -7,6 +7,8 @@ var pointer = 0;
 var contents = null;
 var playlist = null;
 var playpause = null;
+var currentTitle = null;
+var currentArtist = null;
 var isPaused = true;
 var audio;
 var nopic = true;
@@ -16,7 +18,7 @@ var searchTemplate =
 		.addClass('album-cell')
 		.append($(document.createElement('div')).addClass('album-cover').append(
 			$(document.createElement('div')).addClass('album-cover-hover').append(
-				$(document.createElement('span')).addClass('fa fa-play-circle-o')
+				$(document.createElement('span')).addClass('fa fa-play-circle-o play-hover')
 			)
 		))
 		.append($(document.createElement('h1')).addClass('album-title'))
@@ -33,6 +35,8 @@ $(document).ready(function(){
 	contents = $('#contents');
 	playlist = $('#playlist');
 	playpause = $('#playpause');
+	currentTitle = $('current-title');
+	currentArtist = $('current-artist');
 
 	audio = document.createElement("audio");
 
@@ -40,12 +44,19 @@ $(document).ready(function(){
 		nextTrack();
 	});
 	nopic = getFlag("nopic");
+
+	$('#music-progress').slider({
+		formatter: function(value) {
+			var sec = value % 60;
+			return Math.floor(value / 60) + ":" + ((sec.toString().length >= 2) ? sec : '0' + sec);
+		}
+	});
 });
 
 function setFlag(flagName, flagValue){
     var cookieValue = "no";
     if(flagValue) cookieValue = "yes";
-    document.cookie = flagName + "=" + cookieValue + ";";
+    document.cookie = flagName + "=" + cookieValue + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
 }
 
 function getFlag(flagName) {
@@ -123,6 +134,8 @@ function notifyPlay(){
 	playpause.children('span').removeClass('fa-play-circle-o').addClass('fa-pause-circle-o');
 	playlist.removeClass('playing');
 	playlist.children('li[data-id=' + queue[pointer].id + ']').addClass('playing');
+	currentTitle[0].innerHTML = queue[pointer].title;
+	currentArtist[0].innerHTML = queue[pointer].artist;
 	isPaused = false;
 }
 
@@ -161,7 +174,7 @@ function addToSearchlist(id, title, artist){
 	resultView.children('.album-cover').data('meta', {
 		id: id,
 		title: title,
-		author: artist
+		artist: artist
 	}).on('click', function(){
 		var meta = $(this).data('meta');
 		addToPlaylist(meta.id, meta.title, meta.artist);
@@ -189,10 +202,6 @@ function is404(url, callback){
 			callback(true);
 		}
 	})
-	/*var http = new XMLHttpRequest();
-	http.open('HEAD', url, false);
-	http.send();
-	return (http.status === 404);*/
 }
 
 function addToPlaylistFromTemplate(data){
@@ -208,7 +217,7 @@ function addToPlaylistFromTemplate(data){
 			data.artist +
 		'</span>';
 	listView.data('id', data.id);
-	playlist.append(resultView);
+	playlist.append(listView);
 }
 
 function addToPlaylist(id, title, artist){
@@ -231,7 +240,6 @@ function addToPlaylist(id, title, artist){
 				image: null,
 				title: title,
 				artist: artist
-				//audio: null
 			};
 
 			if(jsonData.hasOwnProperty('image') && jsonData.image !== null) data.image = jsonData.image;

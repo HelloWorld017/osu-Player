@@ -136,12 +136,12 @@
 }
 
 .album-title{
-	font-size: 3rem;
+	font-size: 2rem;
 	font-weight: bold;
 }
 
 .album-author{
-	font-size: 2rem;
+	font-size: 1.5rem;
 }
 
 .list-group-item{
@@ -149,11 +149,64 @@
 	font-size: 24px;
 }
 
+.list-title{
+	font-size: 1.5rem;
+}
+
+.list-author{
+	font-size: 1.2rem;
+}
+
 .bgm-music{
 	margin: 8px;
 	margin-right: 16px;
 	color: #00C0A0;
 	font-size: 24px;
+}
+
+.center-progress{
+	display: inline-block;
+	margin-top: 10px;
+	width: 400px;
+}
+
+.slider{
+	width: 100% !important;
+}
+
+.controller{
+	display: inline-block;
+	position: absolute;
+	font-size: 25px;
+	margin: 10px;
+	bottom: 20px;
+}
+
+.controller li{
+	display: inline;
+}
+
+.controller li a{
+	vertical-align: bottom;
+	font-weight: normal !important;
+}
+
+.controller li a:hover{
+	color: #00C0A0;
+}
+
+.playlist-controller{
+	right: 0;
+}
+
+.music-controller{
+	margin: 0;
+	left: 0;
+}
+
+.play-hover:hover{
+	color: #00C0A0;
+	cursor: pointer;
 }
 
 #contents{
@@ -165,9 +218,25 @@
 	overflow-y: auto;
 }
 
+#current-title{
+	font-size: 3rem;
+	overflow: hidden;
+	margin: 0;
+}
+
+#current-artist{
+	font-size: 2rem;
+	overflow: hidden;
+	margin: 0;
+}
+
 #playpause{
 	font-size: 50px;
 	margin-left: 10px;
+	margin-right: 10px;
+}
+
+#toggle-repeat, #toggle-random{
 	margin-right: 10px;
 }
 
@@ -183,20 +252,5 @@ footer{
 	bottom: 0;
 	width: 100%;
 	height: 100px;
-}
-
-footer ul{
-	font-size: 25px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	display: inline-block;
-}
-
-footer ul li{
-	display: inline;
-}
-
-footer ul li a{
-	vertical-align: bottom;
-	font-weight: normal !important;
+	text-align: center;
 }
