@@ -34,7 +34,7 @@ function getMultimedia($id){
 
 		if($meta[1] !== null){
 			$imageFileName = $id . "." . getExtension($meta[1]);
-			$zip->renameName($meta[1], $id);
+			$zip->renameName($meta[1], $imageFileName);
 			$zip->extractTo("./", $imageFileName);
 		}
 
@@ -43,7 +43,7 @@ function getMultimedia($id){
 		$data = [
 			"audio" => $extractedFileName
 		];
-		
+
 		if($imageFileName !== null) $data["image"] = $imageFileName;
 		$data = json_encode($data);
 
@@ -58,7 +58,7 @@ function getMeta($osu){
 	$currentContext = "";
 	$img = null;
 	foreach(explode(getLineSeparator($osu), $osu) as $line){
-		if(preg_match("/\\[\\s*?<context>\\s*\\].*/i", $line, $matches)){
+		if(preg_match("/\\[\\s*(?<context>.+)\\s*\\].*/i", $line, $matches)){
 			$currentContext = $matches['context'];
 		}
 
@@ -66,7 +66,7 @@ function getMeta($osu){
 			$audioFilename = preg_replace("/AudioFilename[ ]*:[ ]*/i", "" , $line);
 		}
 
-		if(strtolower($currentContext) === 'event' && preg_match("/0\\s*,\\s*0\\s*,\\s*[\\\"?\\\']?<img>[\\\"?\\\']/", $line, $imgMatch)){
+		if(strtolower($currentContext) === 'events' && preg_match("/0\\s*,\\s*0\\s*,\\s*[\\\"?\\\'](?<img>.+)[\\\"?\\\']/", $line, $imgMatch)){
 			$img = $imgMatch["img"];
 		}
 	}

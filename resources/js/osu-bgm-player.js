@@ -10,9 +10,15 @@ var playpause = null;
 var currentTitle = null;
 var currentArtist = null;
 var progress = null;
-var isPaused = true;
+var toggleRepeat = null;
+var toggleRandom = null;
 var audio;
-var preloadAudio;
+var preloadAudio = {
+	audio: null,
+	id: null
+};
+var random = false;
+var repeat = false;
 var nopic = true;
 
 var searchTemplate =
@@ -48,14 +54,7 @@ $(document).ready(function(){
 		}
 	});
 
-	audio = $(document.createElement("audio"))
-		.on('ended', function(){
-			nextTrack();
-		}).on('timeupdate', function(){
-			progress.slider('setValue', Math.round(audio.currentTime));
-		}).on('canplaythrough', function(){
-			progress.slider('setAttribute', 'max', Math.round(audio.duration))
-		})[0];
+	audio = attachListenerToAudio(document.createElement('audio'));
 
 	progress.on('slide', function(){
 		audio.currentTime = progress.slider('getValue');
@@ -83,34 +82,74 @@ function getFlag(flagName) {
 }
 
 function prevTrack(){
-	if(!audio.paused){
-		stop();
-	}
+	if(!audio.paused) stop();
 
 	if(queue.length <= 0) return;
 
-	if(--pointer < 0){
-		pointer = 0;
-	}
+	var prevPointer = getPrevTrack();
 
-	audio.src = queue[pointer].music;
-	audio.play();
+	if(prevPointer === null) return;
+	loadTrack(prevPointer);
 }
 
 function nextTrack(){
-	if(!audio.paused){
-		stop();
-	}
+	if(!audio.paused) stop();
 
 	if(queue.length <= 0) return;
 
-	if(++pointer >= queue.length){
-		pointer = queue.length - 1;
-		return;
+	var nextPointer = getNextTrack();
+
+	if(nextPointer === null) return;
+	loadTrack(nextPointer);
+}
+
+function getNextTrack(){
+	if(random)return getRandomTrack();
+
+	var nextPointer = pointer + 1;
+	if(nextPointer >= queue.length){
+		return (repeat ? 0 : null);
 	}
 
-	audio.src = queue[pointer].music;
-	audio.play();
+	return nextPointer;
+}
+
+function getPrevTrack(){
+	if(random) return getRandomTrack();
+
+	var prevPointer = pointer - 1;
+	if(prevPointer < 0){
+		return (repeat ? 0 : null);
+	}
+
+	return prevPointer;
+}
+
+function getRandomTrack(){
+	if(queue.length <= 1){
+		return (repeat ? pointer : null);
+	}
+
+	while(true){
+		var newPointer = Math.floor(Math.random() * queue.length);
+		if(newPointer !== pointer){
+			return newPointer;
+		}
+	}
+}
+
+function loadTrack(newPointer){
+	pointer = newPointer;
+	var id = queue[pointer].id;
+
+	if(preloadAudio.id !== id){
+		audio.src = queue[pointer].music;
+		play();
+		return;
+	}else{
+		audio = attachListenerToAudio(preloadAudio.audio);
+		preloadAudio = {};
+	}
 }
 
 function play(){
@@ -118,7 +157,7 @@ function play(){
 	if(!audio.paused){
 		pause();
 	}else{
-		audio.src = queue[pointer].music;
+		//audio.src = queue[pointer].music;
 		audio.play();
 		notifyPlay();
 	}
@@ -138,6 +177,28 @@ function pause(){
 	notifyStop();
 }
 
+function attachListenerToAudio(audioElement){
+	return $(audioElement)
+		.on('ended', function(){
+			nextTrack();
+		}).on('timeupdate', function(){
+			progress.slider('setValue', Math.round(audio.currentTime));
+			if(audio.currentTime > audio.duration - 15){
+				if(!random && preloadAudio.id !== queue[getNextTrack()].id){
+					//Preload in random is disabled currently.
+					var nextTrack = queue[getNextTrack()];
+
+					preloadAudio.id = nextTrack.id;
+					preloadAudio.audio = document.createElement('audio');
+					preloadAudio.audio.src = nextTrack.music;
+
+				}
+			}
+		}).on('canplaythrough', function(){
+			progress.slider('setAttribute', 'max', Math.round(audio.duration))
+		})[0];
+}
+
 function notifyPlay(){
 	playpause.children('span').removeClass('fa-play-circle-o').addClass('fa-pause-circle-o');
 	playlist.removeClass('playing');
@@ -147,12 +208,10 @@ function notifyPlay(){
 
 	currentTitle[0].innerHTML = queue[pointer].title;
 	currentArtist[0].innerHTML = queue[pointer].artist;
-	isPaused = false;
 }
 
 function notifyStop(){
 	playpause.children('span').removeClass('fa-pause-circle-o').addClass('fa-play-circle-o');
-	isPaused = true;
 }
 
 function search(){
