@@ -81,7 +81,7 @@
 					</li>
 
 					<li id="toggle-repeat">
-						<a href="javascript:toggleRandom()"><span class="fa fa-repeat"></span></a>
+						<a href="javascript:toggleRepeat()"><span class="fa fa-repeat"></span></a>
 					</li>
 				</ul>
 			</footer>

@@ -10,8 +10,8 @@ var playpause = null;
 var currentTitle = null;
 var currentArtist = null;
 var progress = null;
-var toggleRepeat = null;
-var toggleRandom = null;
+var toggleRepeatElement = null;
+var toggleRandomElement = null;
 var audio;
 var preloadAudio = {
 	audio: null,
@@ -45,7 +45,11 @@ $(document).ready(function(){
 	playpause = $('#playpause');
 	currentTitle = $('#current-title');
 	currentArtist = $('#current-artist');
-	nopic = getFlag("nopic");
+	toggleRepeatElement = $('#toggle-repeat');
+	toggleRandomElement = $('#toggle-random');
+	repeat = getFlag('repeat');
+	random = getFlag('random');
+	nopic = getFlag('nopic');
 
 	progress = $('#music-progress').slider({
 		formatter: function(value) {
@@ -79,6 +83,26 @@ function getFlag(flagName) {
         flagValue = cookieData.substring(start, end);
     }
     return (flagValue === "yes");
+}
+
+function toggleRandom(){
+	random = !random;
+	setFlag('random', random);
+	if(random){
+		toggleRandomElement.addClass('active');
+	}else{
+		toggleRandomElement.removeClass('active');
+	}
+}
+
+function toggleRepeat(){
+	repeat = !repeat;
+	setFlag('repeat', repeat);
+	if(repeat){
+		toggleRepeatElement.addClass('active');
+	}else{
+		toggleRepeatElement.removeClass('active');
+	}
 }
 
 function prevTrack(){
