@@ -53,8 +53,8 @@ $(document).ready(function(){
 
 	progress = $('#music-progress').slider({
 		formatter: function(value) {
-			var sec = value % 60;
-			return Math.floor(value / 60) + ":" + ((sec.toString().length >= 2) ? sec : '0' + sec);
+			if(!audio) return getTimeStamp(value);
+			return getTimeStamp(value) + " - " + getTimeStamp(Math.round(audio.duration));
 		}
 	});
 
@@ -64,6 +64,11 @@ $(document).ready(function(){
 		audio.currentTime = progress.slider('getValue');
 	});
 });
+
+function getTimeStamp(time){
+	var sec = time % 60;
+	return Math.floor(time / 60) + ":" + ((sec.toString().length >= 2) ? sec : '0' + sec);
+}
 
 function setFlag(flagName, flagValue){
     var cookieValue = "no";
@@ -79,7 +84,7 @@ function getFlag(flagName) {
     if(start != -1){
         start += flagName.length;
         var end = cookieData.indexOf(';', start);
-        if(end == -1)end = cookieData.length;
+        if(end == -1) end = cookieData.length;
         flagValue = cookieData.substring(start, end);
     }
     return (flagValue === "yes");
@@ -164,27 +169,32 @@ function getRandomTrack(){
 
 function loadTrack(newPointer){
 	pointer = newPointer;
-	var id = queue[pointer].id;
 
-	if(preloadAudio.id !== id){
+	if(preloadAudio.id !== queue[pointer].id){
 		audio.src = queue[pointer].music;
-		play();
-		return;
 	}else{
 		audio = attachListenerToAudio(preloadAudio.audio);
 		preloadAudio = {};
+		console.log("Getting audio from preloaded audio.");
 	}
+	play();
 }
 
 function play(){
 	if(pointer >= queue.length) return;
+
+	if(!audio.src){
+		loadTrack(pointer);
+		return;
+	}
+
 	if(!audio.paused){
 		pause();
-	}else{
-		//audio.src = queue[pointer].music;
-		audio.play();
-		notifyPlay();
+		return;
 	}
+
+	audio.play();
+	notifyPlay();
 }
 
 function stop(){
@@ -202,13 +212,14 @@ function pause(){
 }
 
 function attachListenerToAudio(audioElement){
+	console.log("Attaching event listener to audio.");
 	return $(audioElement)
 		.on('ended', function(){
 			nextTrack();
 		}).on('timeupdate', function(){
 			progress.slider('setValue', Math.round(audio.currentTime));
 			if(audio.currentTime > audio.duration - 15){
-				if(!random && preloadAudio.id !== queue[getNextTrack()].id){
+				if(!random && getNextTrack() && preloadAudio.id !== queue[getNextTrack()].id){
 					//Preload in random is disabled currently.
 					var nextTrack = queue[getNextTrack()];
 
@@ -216,9 +227,11 @@ function attachListenerToAudio(audioElement){
 					preloadAudio.audio = document.createElement('audio');
 					preloadAudio.audio.src = nextTrack.music;
 
+					console.log("Started to preload audio : " + preloadAudio.id);
 				}
 			}
-		}).on('canplaythrough', function(){
+		}).on('canplay', function(){
+			console.log("Adjusting Slider.");
 			progress.slider('setAttribute', 'max', Math.round(audio.duration))
 		})[0];
 }

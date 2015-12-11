@@ -215,6 +215,10 @@
 	cursor: pointer;
 }
 
+.active a span{
+	color: #16A085;
+}
+
 #contents{
 	position: relative;
 	display: inline-block;
