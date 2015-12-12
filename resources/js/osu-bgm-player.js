@@ -352,13 +352,13 @@ function addToPlaylist(id, title, artist){
 
 			var data = {
 				id: id,
-				music: jsonData['audio'],
+				music: 'musics/' + jsonData['audio'],
 				image: null,
 				title: title,
 				artist: artist
 			};
 
-			if(jsonData.hasOwnProperty('image') && jsonData.image !== null) data.image = jsonData.image;
+			if(jsonData.hasOwnProperty('image') && jsonData.image !== null) data.image = 'musics/' + jsonData.image;
 
 			is404(data.music, function(musicErr){
 				if(musicErr){

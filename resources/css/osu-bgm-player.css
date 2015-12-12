@@ -219,6 +219,10 @@
 	color: #16A085;
 }
 
+.toggle{
+	margin-right: 10px;
+}
+
 #contents{
 	position: relative;
 	display: inline-block;
@@ -246,16 +250,16 @@
 	margin-right: 10px;
 }
 
-#toggle-repeat, #toggle-random{
-	margin-right: 10px;
-}
-
 #m-progress .slider-selection{
 	background: #00C0A0;
 }
 
 #m-progress .slider-handle{
 	background: #16A085;
+}
+
+#toggle-repeat{
+	margin-right: 20px;
 }
 
 aside{

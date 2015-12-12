@@ -76,11 +76,19 @@
 				</div>
 
 				<ul class="controller playlist-controller">
-					<li id="toggle-random">
+					<li id="get-lyric" class="toggle">
+						<a href="javascript:showLyric()"><span class="fa fa-list"></span></a>
+					</li>
+
+					<li id="open-config" class="toggle">
+						<a href="javascript:showConfig()"><span class="fa fa-cog"></span></a>
+					</li>
+
+					<li id="toggle-random" class="toggle">
 						<a href="javascript:toggleRandom()"><span class="fa fa-random"></span></a>
 					</li>
 
-					<li id="toggle-repeat">
+					<li id="toggle-repeat" class="toggle">
 						<a href="javascript:toggleRepeat()"><span class="fa fa-repeat"></span></a>
 					</li>
 				</ul>

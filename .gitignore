@@ -4,3 +4,9 @@
 *.jpg
 *.png
 *.osz
+*.jar
+*.jlrc
+.settings/
+bin/
+.classpath
+.project

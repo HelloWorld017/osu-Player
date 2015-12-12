@@ -3,6 +3,7 @@
 const OSZ_URL = "http://bloodcat.com/osu/s/";
 
 function getMultimedia($id){
+	chdir("musics");
 	if(is_file($id . ".meta")){
 		return file_get_contents($id . ".meta");
 	}else{
