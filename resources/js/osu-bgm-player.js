@@ -104,7 +104,7 @@ $(document).ready(function(){
 	lyricContents.scroll(function(){
 		if(!scrollAnimating) freeScroll = true;
 
-		if(scrollAnimating && scrollTarget === lyricContents.scrollTop()){
+		if(scrollAnimating && (scrollTarget === lyricContents.scrollTop() || lyricContents.scrollTop() >= lyricContents[0].scrollHeight - lyricContents.height())){
 			scrollAnimating = false;
 		}
 	});
@@ -196,7 +196,7 @@ function nextTrack(){
 }
 
 function getNextTrack(){
-	if(random)return getRandomTrack();
+	if(random) return getRandomTrack();
 
 	var nextPointer = pointer + 1;
 	if(nextPointer >= queue.length){
@@ -256,6 +256,9 @@ function loadTrack(newPointer){
 		audio = attachListenerToAudio(preloadAudio.audio);
 		preloadAudio = {};
 		console.log("Getting audio from preloaded audio.");
+		console.log("Adjusting slider.");
+		progress.slider('setAttribute', 'max', Math.round(audio.duration));
+		freeScroll = false;
 	}
 	play();
 }
@@ -404,7 +407,7 @@ function attachListenerToAudio(audioElement){
 			}
 		}).on('canplay', function(){
 			console.log("Adjusting Slider.");
-			progress.slider('setAttribute', 'max', Math.round(audio.duration))
+			progress.slider('setAttribute', 'max', Math.round(audio.duration));
 			freeScroll = false;
 		})[0];
 }
