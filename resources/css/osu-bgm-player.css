@@ -172,7 +172,7 @@
 
 .center-progress{
 	display: inline-block;
-	margin-top: 10px;
+	margin-top: 20px;
 	width: 400px;
 }
 
@@ -223,6 +223,32 @@
 	margin-right: 10px;
 }
 
+.hidden-top{
+	position: fixed;
+	top: -100px;
+	transition: top 3s;
+	width: 100%;
+}
+
+.bottom-bg{
+	width: 100%;
+	height: calc(100vh - 120px);
+}
+
+.bottom-bg ul li a{
+	font-size: 25px;
+	color: #00C0A0;
+}
+
+.fa-rotate-to{
+	transition: transform 0.3s;
+}
+
+.lyric-active{
+	color: #00C0A0;
+	font-size: 20px;
+}
+
 #contents{
 	position: relative;
 	display: inline-block;
@@ -230,6 +256,12 @@
 	width: 60%;
 	height: calc(100vh - 200px);
 	overflow-y: auto;
+}
+
+#lyric-contents {
+	text-align: center;
+	height: calc(100vh - 300px);
+	overflow: auto;
 }
 
 #current-title{
@@ -270,9 +302,13 @@ aside{
 }
 
 footer{
-	position: absolute;
-	bottom: 0;
+	/*position: absolute;
+	bottom: 0; */
 	width: 100%;
-	height: 100px;
+	height: 120px;
 	text-align: center;
+}
+
+body{
+	overflow-y: hidden;
 }

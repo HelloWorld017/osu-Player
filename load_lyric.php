@@ -18,4 +18,3 @@
 	exec('java -jar lyric-lib.jar ' . escapeshellcmd($audio));
 
 	echo file_get_contents("musics/" . $audio . ".jlrc");
-?>

@@ -1,10 +1,14 @@
 //const INFO_URL = "http://bloodcat.com/osu/";
 const INFO_URL = "/search_bgm.php"
+const BGM_URL = "load_bgm.php?id=";
+const LYRIC_URL = "/load_lyric.php?id="
 const IMG_URL = "//b.ppy.sh/thumb/{0}l.jpg"
 
 var queue = [];
 var pointer = 0;
 var contents = null;
+var fixedContents = null;
+var lyricContents = null;
 var playlist = null;
 var playpause = null;
 var currentTitle = null;
@@ -12,14 +16,23 @@ var currentArtist = null;
 var progress = null;
 var toggleRepeatElement = null;
 var toggleRandomElement = null;
+var toggleUndergroundElement = null;
+
+var undergroundTop = null;
+var lyric;
 var audio;
 var preloadAudio = {
 	audio: null,
 	id: null
 };
+
 var random = false;
 var repeat = false;
-var nopic = true;
+var nopic = false;
+var noani = false;
+var nolrc = false;
+
+var scrollTick = 500;
 
 var searchTemplate =
 	$(document.createElement('div'))
@@ -38,18 +51,38 @@ var playlistTemplate =
 		.append($(document.createElement('span')).addClass('fa fa-music bgm-music'))
 		.append($(document.createElement('p')).addClass('playlist-text'));
 
+var errorTemplate =
+	$(document.createElement('div'))
+		.addClass('alert alert-danger hidden-top')
+		.append($(document.createElement('a')).addClass('close').attr('href', '#').attr('data-dismiss', 'alert').attr('aria-label', 'close').append(
+			$(document.createElement('span')).addClass('fa fa-close')
+		))
+		.append($(document.createElement('strong')).addClass('error-masthead'))
+		.append($(document.createElement('span')).addClass('error-desc'));
+
 
 $(document).ready(function(){
 	contents = $('#contents');
+	fixedContents = $('#fixed-contents');
+	lyricContents = $('#lyric-contents');
 	playlist = $('#playlist');
 	playpause = $('#playpause');
 	currentTitle = $('#current-title');
 	currentArtist = $('#current-artist');
 	toggleRepeatElement = $('#toggle-repeat');
 	toggleRandomElement = $('#toggle-random');
+	toggleUndergroundElement = $('#toggle-underground span');
 	repeat = getFlag('repeat');
 	random = getFlag('random');
 	nopic = getFlag('nopic');
+	noani = getFlag('noani');
+	nolrc = getFlag('nolrc');
+
+	undergroundTop = $('.bottom-bg').offset().top;
+
+	if(noani) scrollTick = 0;
+	if(!noani) toggleUndergroundElement.addClass('fa-rotate-to');
+	if(!(document.body.scrollTop > 0)) toggleUndergroundElement.addClass('fa-rotate-180');
 
 	progress = $('#music-progress').slider({
 		formatter: function(value) {
@@ -167,6 +200,23 @@ function getRandomTrack(){
 	}
 }
 
+function toggleUnderground(){
+	if(document.body.scrollTop === 0){
+		$('html,body').animate({
+			scrollTop: undergroundTop
+		}, scrollTick);
+
+		toggleUndergroundElement.removeClass('fa-rotate-180')
+		return;
+	}
+
+	$('html,body').animate({
+		scrollTop: 0
+	}, scrollTick);
+
+	toggleUndergroundElement.addClass('fa-rotate-180');
+}
+
 function loadTrack(newPointer){
 	pointer = newPointer;
 
@@ -178,6 +228,57 @@ function loadTrack(newPointer){
 		console.log("Getting audio from preloaded audio.");
 	}
 	play();
+}
+
+function loadLyric(){
+	lyricContents.empty();
+
+	var loading = document.createElement('h1');
+	loading.innerHTML = "Loading lyric of this song...";
+
+	lyricContents.append(loading);
+
+	$.ajax({
+		url: LYRIC_URL + queue[pointer].id,
+		success: function(l){
+			var json = JSON.parse(l);
+			if(!json || json.length === 0){
+				loading.innerHTML = "There are no lyrics of this song.";
+				return;
+			}
+
+			var sortedLyric = {};
+
+			var keys = Object.keys(json);
+			keys.sort(function(a, b){
+				a = parseFloat(a);
+				b = parseFloat(b);
+
+				if(a > b) return 1;
+				if(a < b) return -1;
+				return 0;
+			});
+
+			keys.forEach(function(v){
+				sortedLyric[parseFloat(v)] = json[v];
+			});
+
+			lyric = sortedLyric;
+
+			lyricContents.empty();
+
+			$.each(lyric, function(k, v){
+				v = v.replace('<', '&lt;').replace('>','&gt;').replace('\r\n', '<br>').replace('\n', '<br>').replace('\r', '<br>');
+				var lyricTemplate = $(document.createElement('p'));
+				lyricTemplate[0].innerHTML = v;
+				lyricTemplate.data('timing', k);
+				lyricContents.append(lyricTemplate);
+			});
+		},
+		error: function(){
+			loading.innerHTML = "Couldn't get lyric from the server.";
+		}
+	});
 }
 
 function play(){
@@ -218,6 +319,25 @@ function attachListenerToAudio(audioElement){
 			nextTrack();
 		}).on('timeupdate', function(){
 			progress.slider('setValue', Math.round(audio.currentTime));
+			if(!nolrc){
+				lyricContents.removeClass('lyric-active');
+
+				var previousKey = undefined;
+
+				$.each(lyric, function(v, k){
+					if(audio.currentTime > k){
+						return false;
+					}
+					previousKey = k;
+				});
+
+				if(previousKey !== undefined){
+					lyricContents.children('p').filter(function(v){
+						return ($(v).data('timing') === previousKey);
+	 				}).addClass('lyric-active');
+				}
+			}
+
 			if(audio.currentTime > audio.duration - 15){
 				if(!random && getNextTrack() && preloadAudio.id !== queue[getNextTrack()].id){
 					//Preload in random is disabled currently.
@@ -242,6 +362,8 @@ function notifyPlay(){
 	playlist.children('li').filter(function(v){
 		return $(v).data('id') === queue[pointer].id;
 	}).addClass('playing');
+
+	loadLyric();
 
 	currentTitle[0].innerHTML = queue[pointer].title;
 	currentArtist[0].innerHTML = queue[pointer].artist;
@@ -294,7 +416,12 @@ function addToSearchlist(id, title, artist){
 }
 
 function error(text){
-	alert(text);
+	var errorView = errorTemplate.clone();
+
+	errorView.children('.error-masthead')[0].innerHTML = 'Error!';
+	errorView.children('.error-desc')[0].innerHTML = text;
+
+	fixedContents.append(errorView);
 }
 
 function is404(url, callback){
@@ -346,7 +473,7 @@ function addToPlaylist(id, title, artist){
 	var view = addToPlaylistPlaceholder();
 
 	$.ajax({
-		url: "load_bgm.php?id=" + id,
+		url: BGM_URL + id,
 		success: function(data){
 			var jsonData = JSON.parse(data);
 

@@ -14,10 +14,9 @@
 		<link rel="shortcut icon" href="/resources/favicon.ico"/>
 
 		<script src="/resources/js/jquery-2.1.4.min.js"></script>
-		<script src="/resources/js/modernizr.js"></script>
+		<script src="/resources/js/bootstrap.min.js"></script>
 		<script src="/resources/js/bootstrap-slider.min.js"></script>
 		<script src="/resources/js/osu-bgm-player.js"></script>
-
 	</head>
 
 	<body class="fonted">
@@ -45,6 +44,10 @@
         </nav>
 
 		<section>
+			<div id="fixed-contents">
+
+			</div>
+
 			<div id="contents">
 
 			</div>
@@ -54,45 +57,63 @@
 					<h1>Playlist</h1>
 				</ul>
 			</aside>
+		</section>
 
-			<footer class="bg-main">
-				<ul class="controller music-controller">
-					<li>
-						<a href="javascript:prevTrack()"><span class="fa fa-chevron-left"></span></a>
-					</li>
-					<li>
-						<a id="playpause" href="javascript:play()"><span class="fa fa-play-circle-o"></span></a>
-					</li>
-					<li>
-						<a href="javascript:nextTrack()"><span class="fa fa-chevron-right"></span></a>
-					</li>
-				</ul>
+		<footer class="bg-main">
+			<ul class="controller music-controller">
+				<li>
+					<a href="javascript:prevTrack()"><span class="fa fa-chevron-left"></span></a>
+				</li>
+				<li>
+					<a id="playpause" href="javascript:play()"><span class="fa fa-play-circle-o"></span></a>
+				</li>
+				<li>
+					<a href="javascript:nextTrack()"><span class="fa fa-chevron-right"></span></a>
+				</li>
+			</ul>
 
-				<div class="center-progress">
-					<input id="music-progress" type="text" data-slider-id="m-progress" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="0" data-slider-handle="square"/>
-					<br>
-					<h1 id="current-title">osu!Player</h1>
-					<h2 id="current-artist">Add musics by searching!</h2>
+			<div class="center-progress">
+				<input id="music-progress" type="text" data-slider-id="m-progress" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="0" data-slider-handle="square"/>
+				<br>
+				<h1 id="current-title">osu!Player</h1>
+				<h2 id="current-artist">Add musics by searching!</h2>
+			</div>
+
+			<ul class="controller playlist-controller">
+				<li id="toggle-underground" class="toggle">
+					<a href="javascript:toggleUnderground()"><span class="fa fa-chevron-up"></span></a>
+				</li>
+
+				<li id="toggle-random" class="toggle">
+					<a href="javascript:toggleRandom()"><span class="fa fa-random"></span></a>
+				</li>
+
+				<li id="toggle-repeat" class="toggle">
+					<a href="javascript:toggleRepeat()"><span class="fa fa-repeat"></span></a>
+				</li>
+			</ul>
+		</footer>
+
+		<div class="bottom-bg">
+			<ul class="nav nav-tabs">
+				<li><a data-toggle="tab" href="#tab-lyrics"><span class="fa fa-list"></span></a></li>
+				<li><a data-toggle="tab" href="#tab-settings"><span class="fa fa-cog"></span></a></li>
+			</ul>
+
+			<div class="tab-content">
+				<div id="tab-lyrics" class="tab-pane fade">
+					<div class="container">
+						<h2>Lyrics</h2>
+						<p id="lyric-contents">
+
+						</p>
+					</div>
 				</div>
 
-				<ul class="controller playlist-controller">
-					<li id="get-lyric" class="toggle">
-						<a href="javascript:showLyric()"><span class="fa fa-list"></span></a>
-					</li>
+				<div id="tab-settings" class="tab-pane fade">
 
-					<li id="open-config" class="toggle">
-						<a href="javascript:showConfig()"><span class="fa fa-cog"></span></a>
-					</li>
-
-					<li id="toggle-random" class="toggle">
-						<a href="javascript:toggleRandom()"><span class="fa fa-random"></span></a>
-					</li>
-
-					<li id="toggle-repeat" class="toggle">
-						<a href="javascript:toggleRepeat()"><span class="fa fa-repeat"></span></a>
-					</li>
-				</ul>
-			</footer>
-		</section>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
