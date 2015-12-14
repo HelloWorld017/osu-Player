@@ -14,6 +14,7 @@ var playpause = null;
 var currentTitle = null;
 var currentArtist = null;
 var progress = null;
+var dialog = null;
 
 var toggles = {
 	repeat: null,
@@ -71,7 +72,7 @@ var errorTemplate =
 	$(document.createElement('div'))
 		.addClass('alert alert-danger hidden-top')
 		.append($(document.createElement('a')).addClass('close').attr('href', '#').attr('data-dismiss', 'alert').attr('aria-label', 'close').append(
-			$(document.createElement('span')).addClass('fa fa-close')
+			$(document.createElement('span')).addClass('fa fa-times')
 		))
 		.append($(document.createElement('strong')).addClass('error-masthead'))
 		.append($(document.createElement('span')).addClass('error-desc'));
@@ -84,6 +85,7 @@ $(document).ready(function(){
 	playpause = $('#playpause');
 	currentTitle = $('#current-title');
 	currentArtist = $('#current-artist');
+	dialog = $('#playlist-dialog');
 
 	toggles.repeat = $('#toggle-repeat');
 	toggles.random = $('#toggle-random');
@@ -456,10 +458,8 @@ function attachListenerToAudio(audioElement){
 
 function notifyPlay(){
 	playpause.children('span').removeClass('fa-play-circle-o').addClass('fa-pause-circle-o');
-	playlist.removeClass('playing');
-	playlist.children('li').filter(function(){
-		return $(this).data('id') == queue[pointer].id;
-	}).addClass('playing');
+	playlist.children().removeClass('playing');
+	getElementByMusicId(queue[pointer].id).addClass('playing');
 
 	loadLyric();
 
@@ -533,7 +533,7 @@ function is404(url, callback){
 		error: function(){
 			callback(true);
 		}
-	})
+	});
 }
 
 function addToPlaylistPlaceholder(id){
@@ -542,6 +542,13 @@ function addToPlaylistPlaceholder(id){
 	listView.children('.playlist-text')[0].innerHTML =
 		'<span class="list-title">Adding your selected music. Plz wait for a sec!</span>';
 	listView.data('id', id);
+
+	listView.on('click', function(){
+		$('#playlist-dialog-title')[0].innerHTML = queue[indexOfId($(this).data('id'))].title;
+		dialog.html($(dialog).html());
+		$('#playlist-dialog-content div').data('id', $(this).data('id'));
+		dialog.modal();
+	});
 
 	playlist.append(listView);
 
@@ -628,12 +635,62 @@ function afterQueueCheck(id){
 	}
 }
 
+function getElementByMusicId(id){
+	return playlist.children('li').filter(function(){
+		return $(this).data('id') === id;
+	});
+}
+
+function indexOfId(id){
+	var index = -1;
+	queue.forEach(function(v, k){
+		if(v.id === id) index = k;
+	});
+	return index;
+}
+
+function playlistUp(id){
+	var index = indexOfId(id);
+	if(index <= 0) return;
+
+	var pointerID = queue[pointer].id;
+
+	var temp = queue[index - 1];
+	queue[index - 1] = queue[index];
+	queue[index] = temp;
+
+	pointer = indexOfId(pointerID);
+
+	var element = getElementByMusicId(id);
+	element.prev().before(element);
+}
+
+function playlistDown(id){
+	var index = indexOfId(id);
+	if(index >= queue.length - 1) return;
+
+	var pointerID = queue[pointer].id;
+
+	var temp = queue[index + 1];
+	queue[index + 1] = queue[index];
+	queue[index] = temp;
+
+	pointer = indexOfId(pointerID);
+
+	var element = getElementByMusicId(id);
+	element.next().after(element);
+}
+
+function downloadMusic(id){
+	var data = queue[indexOfId(id)];
+	var split = data.music.split('.');
+	download(data.music, data.artist + ' - ' + data.title + "." + split[split.length - 1]);
+}
+
 function removeFromPlaylist(id){
 	queue = queue.filter(function(v){
 		return v.id !== id;
 	});
 
-	playlist.children('li').filter(function(){
-		return $(this).data('id') === id;
-	}).remove();
+	getElementByMusicId(id).remove();
 }

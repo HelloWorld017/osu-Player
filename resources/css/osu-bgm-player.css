@@ -263,7 +263,7 @@
 }
 
 .playing .fa:before{
-	contents: "\f01d";
+	content: "\f01d";
 	font-size: 3rem;
 	color: #16A085;
 }
@@ -320,6 +320,10 @@ aside{
 	width: 30%;
 }
 
+aside li{
+	cursor: pointer;
+}
+
 footer{
 	/*position: absolute;
 	bottom: 0; */
@@ -330,4 +334,14 @@ footer{
 
 body{
 	overflow-y: hidden;
+}
+
+a{
+	color: #00C0A0;
+}
+
+a:hover{
+	color: #00C0A0;
+	font-weight: bold;
+	text-decoration: none;
 }
