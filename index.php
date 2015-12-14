@@ -8,14 +8,16 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no">
 
 		<link rel="stylesheet" type="text/css" href="/resources/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="/resources/css/bootstrap-slider.min.css">
+		<link rel="stylesheet" type="text/css" href="/resources/css/bootstrap-toggle.min.css">
 		<link rel="stylesheet" type="text/css" href="/resources/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="/resources/css/osu-bgm-player.css">
-		<link rel="stylesheet" type="text/css" href="/resources/css/bootstrap-slider.min.css">
 		<link rel="shortcut icon" href="/resources/favicon.ico"/>
 
 		<script src="/resources/js/jquery-2.1.4.min.js"></script>
 		<script src="/resources/js/bootstrap.min.js"></script>
 		<script src="/resources/js/bootstrap-slider.min.js"></script>
+		<script src="/resources/js/bootstrap-toggle.min.js"></script>
 		<script src="/resources/js/osu-bgm-player.js"></script>
 	</head>
 
@@ -85,11 +87,11 @@
 				</li>
 
 				<li id="toggle-random" class="toggle">
-					<a href="javascript:toggleRandom()"><span class="fa fa-random"></span></a>
+					<a href="javascript:toggleFlag('random')"><span class="fa fa-random"></span></a>
 				</li>
 
 				<li id="toggle-repeat" class="toggle">
-					<a href="javascript:toggleRepeat()"><span class="fa fa-repeat"></span></a>
+					<a href="javascript:toggleFlag('repeat')"><span class="fa fa-repeat"></span></a>
 				</li>
 			</ul>
 		</footer>
@@ -111,7 +113,21 @@
 				</div>
 
 				<div id="tab-settings" class="tab-pane fade">
-
+					<div class="container">
+						<h1>Settings</h1>
+						<div class="setting-item">
+							<h3>No preview images</h3>
+							<input id="nopic" type="checkbox" checked data-toggle="toggle">
+						</div>
+						<div class="setting-item">
+							<h3>No syncing lyrics</h3>
+							<input id="nolrc" type="checkbox" checked data-toggle="toggle">
+						</div>
+						<div class="setting-item">
+							<h3>No up/down toggle animations (Experimental)</h3>
+							<input id="noani" type="checkbox" checked data-toggle="toggle">
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

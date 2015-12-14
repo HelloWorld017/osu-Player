@@ -249,6 +249,25 @@
 	font-size: 20px;
 }
 
+.playing{
+	color: #00C0A0;
+	font-weight: bold;
+}
+
+.playing .list-title{
+	font-size: 2rem;
+}
+
+.playing .list-author{
+	font-size: 1.5rem;
+}
+
+.playing .fa:before{
+	contents: "\f01d";
+	font-size: 3rem;
+	color: #16A085;
+}
+
 #contents{
 	position: relative;
 	display: inline-block;

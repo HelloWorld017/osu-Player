@@ -14,9 +14,26 @@ var playpause = null;
 var currentTitle = null;
 var currentArtist = null;
 var progress = null;
-var toggleRepeatElement = null;
-var toggleRandomElement = null;
-var toggleUndergroundElement = null;
+
+var toggles = {
+	repeat: null,
+	random: null,
+	underground: null
+};
+
+var settings = {
+	nopic: null,
+	noani: null,
+	nolrc: null
+}
+
+var prefs = {
+	random: false,
+	repeat: false,
+	nopic: false,
+	noani: false,
+	nolrc: false
+};
 
 var undergroundTop = null;
 var lyric;
@@ -28,12 +45,6 @@ var preloadAudio = {
 	audio: null,
 	id: null
 };
-
-var random = false;
-var repeat = false;
-var nopic = false;
-var noani = false;
-var nolrc = false;
 
 var freeScroll = false;
 
@@ -73,20 +84,37 @@ $(document).ready(function(){
 	playpause = $('#playpause');
 	currentTitle = $('#current-title');
 	currentArtist = $('#current-artist');
-	toggleRepeatElement = $('#toggle-repeat');
-	toggleRandomElement = $('#toggle-random');
-	toggleUndergroundElement = $('#toggle-underground span');
-	repeat = getFlag('repeat');
-	random = getFlag('random');
-	nopic = getFlag('nopic');
-	noani = getFlag('noani');
-	nolrc = getFlag('nolrc');
+
+	toggles.repeat = $('#toggle-repeat');
+	toggles.random = $('#toggle-random');
+	toggles.underground = $('#toggle-underground span');
+
+	settings.nopic = $('#nopic');
+	settings.noani = $('#noani');
+	settings.nolrc = $('#nolrc');
+
+	prefs.repeat = getFlag('repeat');
+	prefs.random = getFlag('random');
+	prefs.nopic = getFlag('nopic');
+	prefs.noani = getFlag('noani');
+	prefs.nolrc = getFlag('nolrc');
+
+	$.each(toggles, function(k, v){
+		toggleFlag(k, true);
+	});
+
+	$.each(settings, function(k, v){
+		toggleSetting(k, true);
+		v.on('change', function(){
+			toggleSetting(k, false, true);
+		});
+	});
 
 	undergroundTop = $('.bottom-bg').offset().top;
 
-	if(noani) scrollTick = 0;
-	if(!noani) toggleUndergroundElement.addClass('fa-rotate-to');
-	if(!(document.body.scrollTop > 0)) toggleUndergroundElement.addClass('fa-rotate-180');
+	if(prefs.noani) scrollTick = 0;
+	if(!prefs.noani) toggles.underground.addClass('fa-rotate-to');
+	if(!(document.body.scrollTop > 0)) toggles.underground.addClass('fa-rotate-180');
 
 	progress = $('#music-progress').slider({
 		formatter: function(value) {
@@ -102,6 +130,8 @@ $(document).ready(function(){
 	});
 
 	lyricContents.scroll(function(){
+		if(prefs.nolrc) return;
+
 		if(!scrollAnimating) freeScroll = true;
 
 		if(scrollAnimating && (scrollTarget === lyricContents.scrollTop() || lyricContents.scrollTop() >= lyricContents[0].scrollHeight - lyricContents.height())){
@@ -153,24 +183,53 @@ function getFlag(flagName) {
     return (flagValue === "yes");
 }
 
-function toggleRandom(){
-	random = !random;
-	setFlag('random', random);
-	if(random){
-		toggleRandomElement.addClass('active');
-	}else{
-		toggleRandomElement.removeClass('active');
-	}
+function toggleValue(flag){
+	prefs[flag] = !prefs[flag];
+	setFlag(flag, prefs[flag]);
+	return prefs[flag];
 }
 
-function toggleRepeat(){
-	repeat = !repeat;
-	setFlag('repeat', repeat);
-	if(repeat){
-		toggleRepeatElement.addClass('active');
-	}else{
-		toggleRepeatElement.removeClass('active');
+function toggleFlag(flag, init){
+	var flagValue = prefs[flag];
+	if(!init) flagValue = toggleValue(flag);
+
+	if(flagValue){
+		toggles[flag].addClass('active');
+		return;
 	}
+
+	toggles[flag].removeClass('active');
+}
+
+function toggleSetting(flag, init, output){
+	var flagValue = prefs[flag];
+	if(!init) flagValue = toggleValue(flag);
+
+	if(output) return;
+
+	if(flagValue){
+		settings[flag].bootstrapToggle('on');
+		return;
+	}
+
+	settings[flag].bootstrapToggle('off');
+}
+
+function toggleUnderground(){
+	if(document.body.scrollTop === 0){
+		$('html,body').animate({
+			scrollTop: undergroundTop
+		}, scrollTick);
+
+		toggles.underground.removeClass('fa-rotate-180')
+		return;
+	}
+
+	$('html,body').animate({
+		scrollTop: 0
+	}, scrollTick);
+
+	toggles.underground.addClass('fa-rotate-180');
 }
 
 function prevTrack(){
@@ -196,22 +255,22 @@ function nextTrack(){
 }
 
 function getNextTrack(){
-	if(random) return getRandomTrack();
+	if(prefs.random) return getRandomTrack();
 
 	var nextPointer = pointer + 1;
 	if(nextPointer >= queue.length){
-		return (repeat ? 0 : null);
+		return (prefs.repeat ? 0 : null);
 	}
 
 	return nextPointer;
 }
 
 function getPrevTrack(){
-	if(random) return getRandomTrack();
+	if(prefs.random) return getRandomTrack();
 
 	var prevPointer = pointer - 1;
 	if(prevPointer < 0){
-		return (repeat ? 0 : null);
+		return (prefs.repeat ? 0 : null);
 	}
 
 	return prevPointer;
@@ -219,7 +278,7 @@ function getPrevTrack(){
 
 function getRandomTrack(){
 	if(queue.length <= 1){
-		return (repeat ? pointer : null);
+		return (prefs.repeat ? pointer : null);
 	}
 
 	while(true){
@@ -228,23 +287,6 @@ function getRandomTrack(){
 			return newPointer;
 		}
 	}
-}
-
-function toggleUnderground(){
-	if(document.body.scrollTop === 0){
-		$('html,body').animate({
-			scrollTop: undergroundTop
-		}, scrollTick);
-
-		toggleUndergroundElement.removeClass('fa-rotate-180')
-		return;
-	}
-
-	$('html,body').animate({
-		scrollTop: 0
-	}, scrollTick);
-
-	toggleUndergroundElement.addClass('fa-rotate-180');
 }
 
 function loadTrack(newPointer){
@@ -359,7 +401,7 @@ function attachListenerToAudio(audioElement){
 			nextTrack();
 		}).on('timeupdate', function(){
 			progress.slider('setValue', Math.round(audio.currentTime));
-			if(!nolrc){
+			if(!prefs.nolrc){
 				var children = lyricContents.children('p');
 
 				var previousKey = undefined;
@@ -394,7 +436,7 @@ function attachListenerToAudio(audioElement){
 			}
 
 			if(audio.currentTime > audio.duration - 15){
-				if(!random && getNextTrack() && preloadAudio.id !== queue[getNextTrack()].id){
+				if(!prefs.random && getNextTrack() && preloadAudio.id !== queue[getNextTrack()].id){
 					//Preload in random is disabled currently.
 					var nextTrack = queue[getNextTrack()];
 
@@ -416,7 +458,7 @@ function notifyPlay(){
 	playpause.children('span').removeClass('fa-play-circle-o').addClass('fa-pause-circle-o');
 	playlist.removeClass('playing');
 	playlist.children('li').filter(function(){
-		return $(this).data('id') === queue[pointer].id;
+		return $(this).data('id') == queue[pointer].id;
 	}).addClass('playing');
 
 	loadLyric();
@@ -454,7 +496,7 @@ function addToSearchlist(id, title, artist){
 	var resultView = searchTemplate.clone();
 
 	var src = "http://placehold.it/160x120";
-	if(!nopic) src = IMG_URL.replace("{0}", id);
+	if(!prefs.nopic) src = IMG_URL.replace("{0}", id);
 
 	resultView.children('.album-cover').data('meta', {
 		id: id,
@@ -518,15 +560,9 @@ function addToPlaylistFromTemplate(listView, data){
 }
 
 function addToPlaylist(id, title, artist){
-	var alreadyAdded = false;
+	if(queueCheck(id)) return;
 
-	queue.forEach(function(v){
-		if(v.id === id) alreadyAdded = true;
-	});
-
-	if(alreadyAdded) return;
-
-	var view = addToPlaylistPlaceholder();
+	var view = addToPlaylistPlaceholder(id);
 
 	$.ajax({
 		url: BGM_URL + id,
@@ -558,10 +594,12 @@ function addToPlaylist(id, title, artist){
 
 						addToPlaylistFromTemplate(view, data);
 						queue.push(data);
+						afterQueueCheck(id);
 					});
 				}else{
 					addToPlaylistFromTemplate(view, data);
 					queue.push(data);
+					afterQueueCheck(id);
 				}
 			});
 		},
@@ -573,8 +611,25 @@ function addToPlaylist(id, title, artist){
 	});
 }
 
+function queueCheck(id){
+	var alreadyAdded = 0;
+
+	queue.forEach(function(v){
+		if(v.id === id) alreadyAdded++;
+	});
+
+	return alreadyAdded;
+}
+
+function afterQueueCheck(id){
+	var res = queueCheck(id) > 1;
+	if(res){
+		removeFromPlaylist(id);
+	}
+}
+
 function removeFromPlaylist(id){
-	queue.filter(function(v){
+	queue = queue.filter(function(v){
 		return v.id !== id;
 	});
 
