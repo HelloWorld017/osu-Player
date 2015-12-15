@@ -330,8 +330,9 @@
 aside{
 	float: right;
 	display: inline-block;
-	height: 100%;
 	width: 30%;
+	height: calc(100vh - 180px);
+	overflow-y: auto;
 }
 
 aside li{

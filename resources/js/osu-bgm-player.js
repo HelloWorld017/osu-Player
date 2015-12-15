@@ -690,13 +690,41 @@ function playlistDown(id){
 	element.next().after(element);
 }
 
-function downloadMusic(id){
+function downloadFromURL(url, name){
+	var x = new XMLHttpRequest();
+	x.open("GET", url, true);
+	x.responseType = 'blob';
+	x.onload = function(){
+		download(x.response, name);
+	}
+	x.send();
+}
+
+function downloadFromMeta(id, type){
 	var data = queue[indexOfId(id)];
-	var split = data.music.split('.');
-	download(data.music, data.artist + ' - ' + data.title + "." + split[split.length - 1]);
+	var split = data[type].split('.');
+	downloadFromURL(data[type], data.artist + ' - ' + data.title + "." + split[split.length - 1]);
+}
+
+function downloadMusic(id){
+	downloadFromMeta(id, "music");
+}
+
+function downloadImage(id){
+	downloadFromMeta(id, "image");
+}
+
+function downloadBeatmap(id){
+	$(document.createElement('form'))
+		.attr('action', "https://bloodcat.com/osu/s/" + id)
+		.attr('method', 'post')
+		.attr('target', '_blank')
+		.submit();
 }
 
 function removeFromPlaylist(id){
+	if(pointer === indexOfId(id) && !audio.paused) stop();
+	
 	queue = queue.filter(function(v){
 		return v.id !== id;
 	});

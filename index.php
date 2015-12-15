@@ -50,9 +50,19 @@
 									Down
 								</button>
 
+								<button class="list-group-item list-group-item-info" onclick="downloadBeatmap($(this).parent().data('id'));">
+									<span class="fa fa-download"></span>
+									Download Beatmap
+								</button>
+
 								<button class="list-group-item list-group-item-info" onclick="downloadMusic($(this).parent().data('id'));">
 									<span class="fa fa-arrow-down"></span>
-									Download
+									Download Music
+								</button>
+
+								<button class="list-group-item list-group-item-info" onclick="downloadImage($(this).parent().data('id'));">
+									<span class="fa fa-picture-o"></span>
+									Download Image
 								</button>
 
 								<button class="list-group-item list-group-item-danger" onclick="removeFromPlaylist($(this).parent().data('id'));">
