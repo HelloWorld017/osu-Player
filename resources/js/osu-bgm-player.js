@@ -15,6 +15,7 @@ var currentTitle = null;
 var currentArtist = null;
 var progress = null;
 var dialog = null;
+var bgPict = null;
 
 var toggles = {
 	repeat: null,
@@ -86,6 +87,7 @@ $(document).ready(function(){
 	currentTitle = $('#current-title');
 	currentArtist = $('#current-artist');
 	dialog = $('#playlist-dialog');
+	bgPict = $('#bg-pict');
 
 	toggles.repeat = $('#toggle-repeat');
 	toggles.random = $('#toggle-random');
@@ -112,7 +114,7 @@ $(document).ready(function(){
 		});
 	});
 
-	undergroundTop = $('.bottom-bg').offset().top;
+	undergroundTop = $('footer');
 
 	if(prefs.noani) scrollTick = 0;
 	if(!prefs.noani) toggles.underground.addClass('fa-rotate-to');
@@ -220,7 +222,7 @@ function toggleSetting(flag, init, output){
 function toggleUnderground(){
 	if(document.body.scrollTop === 0){
 		$('html,body').animate({
-			scrollTop: undergroundTop
+			scrollTop: undergroundTop.offset().top
 		}, scrollTick);
 
 		toggles.underground.removeClass('fa-rotate-180')
@@ -465,6 +467,10 @@ function notifyPlay(){
 
 	currentTitle[0].innerHTML = queue[pointer].title;
 	currentArtist[0].innerHTML = queue[pointer].artist;
+
+	bgPict.css({
+		'background-image': ((queue[pointer].image) ? 'url("' + queue[pointer].image + '")' : "")
+	});
 }
 
 function notifyStop(){
@@ -520,6 +526,9 @@ function error(text){
 	errorView.children('.error-desc')[0].innerHTML = text;
 
 	fixedContents.append(errorView);
+	errorView.animate({
+		'top': 0
+	}, 2000);
 }
 
 function is404(url, callback){

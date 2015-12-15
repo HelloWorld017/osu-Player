@@ -18,10 +18,54 @@
 		<script src="/resources/js/bootstrap.min.js"></script>
 		<script src="/resources/js/bootstrap-slider.min.js"></script>
 		<script src="/resources/js/bootstrap-toggle.min.js"></script>
+		<script src="/resources/js/download.js"></script>
 		<script src="/resources/js/osu-bgm-player.js"></script>
+		<script src="/resources/js/osu-bgm-player-ui.js"></script>
 	</head>
 
 	<body class="fonted">
+		<div id="playlist-dialog" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span class="fa fa-times"></span>
+						</button>
+
+						<h4 id="playlist-dialog-title">
+
+						</h4>
+					</div>
+
+					<div class="modal-body">
+						<div id="playlist-dialog-content">
+							<div class="list-group">
+								<button class="list-group-item list-group-item-success" onclick="playlistUp($(this).parent().data('id'));">
+									<span class="fa fa-chevron-up"></span>
+									Up
+								</button>
+
+								<button class="list-group-item list-group-item-success" onclick="playlistDown($(this).parent().data('id'));">
+									<span class="fa fa-chevron-down"></span>
+									Down
+								</button>
+
+								<button class="list-group-item list-group-item-info" onclick="downloadMusic($(this).parent().data('id'));">
+									<span class="fa fa-arrow-down"></span>
+									Download
+								</button>
+
+								<button class="list-group-item list-group-item-danger" onclick="removeFromPlaylist($(this).parent().data('id'));">
+									<span class="fa fa-trash"></span>
+									Remove
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<nav class="navbar navbar-inverse bg-main" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -29,23 +73,34 @@
                 </div>
 
                 <div class="navbar-header navbar-right">
-					<form role="form" class="form-inline" onsubmit="search(); return false;">
-						<div class="form-group">
+					<form role="search" class="navbar-form" onsubmit="search(); return false;">
+						<div class="input-group">
 							<input name="q" type="text" class="form-control" placeholder="Search musics!">
 							<input name="mod" type="hidden" value="json">
 							<input name="m" type="hidden" value="s">
 							<input name="s" type="hidden" value="title">
-						</div>
 
-						<button type="button" class="bt bg-transparent nav-toggle" data-toggle="collapse" data-target="#right-navbar">
-	                        <span class="fa fa-search bright-font"></span>
-	                    </button>
+							<span class="input-group-btn">
+								<button type="button" class="btn bg-transparent nav-toggle">
+		                        	<span class="fa fa-search bright-font"></span>
+		                    	</button>
+							</span>
+						</div>
 					</form>
                 </div>
             </div>
         </nav>
 
 		<section>
+			<ul id="ground-nav" class="nav nav-tabs">
+				<li><a data-toggle="tab" href="#tab-picture"><span class="fa fa-picture-o"></span></a></li>
+				<li><a data-toggle="tab" href="#contents"><span class="fa fa-search"></span></a></li>
+				<li><a data-toggle="tab" href="#playlist-aside"><span class="fa fa-list-ol"></span></a></li>
+				<li><a data-toggle="tab" href="#tab-lyrics"><span class="fa fa-list"></span></a></li>
+				<li><a data-toggle="tab" href="#tab-settings"><span class="fa fa-cog"></span></a></li>
+				<li><a data-toggle="tab" href="#tab-about"><span class="fa fa-info"></span></a></li>
+			</ul>
+
 			<div id="fixed-contents">
 
 			</div>
@@ -54,7 +109,7 @@
 
 			</div>
 
-			<aside>
+			<aside id="playlist-aside">
 				<ul id="playlist" class="list-group">
 					<h1>Playlist</h1>
 				</ul>
@@ -100,6 +155,8 @@
 			<ul class="nav nav-tabs">
 				<li><a data-toggle="tab" href="#tab-lyrics"><span class="fa fa-list"></span></a></li>
 				<li><a data-toggle="tab" href="#tab-settings"><span class="fa fa-cog"></span></a></li>
+				<li><a data-toggle="tab" href="#tab-picture"><span class="fa fa-picture-o"></span></a></li>
+				<li><a data-toggle="tab" href="#tab-about"><span class="fa fa-info"></span></a></li>
 			</ul>
 
 			<div class="tab-content">
@@ -112,9 +169,15 @@
 					</div>
 				</div>
 
+				<div id="tab-picture" class="tab-pane fade">
+					<div id="bg-pict">
+
+					</div>
+				</div>
+
 				<div id="tab-settings" class="tab-pane fade">
 					<div class="container">
-						<h1>Settings</h1>
+						<h2>Settings</h2>
 						<div class="setting-item">
 							<h3>No preview images</h3>
 							<input id="nopic" type="checkbox" checked data-toggle="toggle">
@@ -127,6 +190,13 @@
 							<h3>No up/down toggle animations (Experimental)</h3>
 							<input id="noani" type="checkbox" checked data-toggle="toggle">
 						</div>
+					</div>
+				</div>
+
+				<div id="tab-about" class="tab-pane fade">
+					<div class="container">
+						<h2>About osu!Player</h2>
+						<p>Developed by Khinenw. Available at <a href="https://github.com/HelloWorld017/osu-Player">GitHub</a></p>
 					</div>
 				</div>
 			</div>
