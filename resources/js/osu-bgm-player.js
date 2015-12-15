@@ -501,7 +501,7 @@ function search(){
 function addToSearchlist(id, title, artist){
 	var resultView = searchTemplate.clone();
 
-	var src = "http://placehold.it/160x120";
+	var src = "//placehold.it/160x120";
 	if(!prefs.nopic) src = IMG_URL.replace("{0}", id);
 
 	resultView.children('.album-cover').data('meta', {
@@ -724,7 +724,7 @@ function downloadBeatmap(id){
 
 function removeFromPlaylist(id){
 	if(pointer === indexOfId(id) && !audio.paused) stop();
-	
+
 	queue = queue.filter(function(v){
 		return v.id !== id;
 	});
