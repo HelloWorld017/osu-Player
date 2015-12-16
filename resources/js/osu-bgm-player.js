@@ -573,6 +573,7 @@ function addToPlaylistFromTemplate(listView, data){
 		'<span class="list-author">' +
 			data.artist +
 		'</span>';
+	playlist.append(listView); //Fixes #2
 }
 
 function addToPlaylist(id, title, artist){
