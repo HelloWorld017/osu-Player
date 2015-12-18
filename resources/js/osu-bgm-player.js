@@ -732,3 +732,23 @@ function removeFromPlaylist(id){
 
 	getElementByMusicId(id).remove();
 }
+
+function exportPlaylist(){
+	var date = new Date();
+	download(
+		JSON.stringify(queue),
+
+		"playlist-" +
+		date.getFullYear() +
+		date.getMonth() +
+		date.getDate() +
+		" " +
+		date.getHours() +
+		date.getMinutes() +
+		date.getSeconds()
+	);
+}
+
+function importPlaylist(){
+	//TODO add import/export playlist (with UI).
+}
