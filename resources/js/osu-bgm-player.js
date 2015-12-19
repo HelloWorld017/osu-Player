@@ -4,6 +4,9 @@ const BGM_URL = "load_bgm.php?id=";
 const LYRIC_URL = "/load_lyric.php?id="
 const IMG_URL = "//b.ppy.sh/thumb/{0}l.jpg"
 
+const EMBED_URL = "//bgm.khinenw.tk/embed.php?";
+const EMBED_TEMPLATE = '<iframe src="{%src}" width="200" height="150" style="border: none"></iframe>';
+
 var queue = [];
 var pointer = 0;
 var contents = null;
@@ -740,15 +743,28 @@ function exportPlaylist(){
 
 		"playlist-" +
 		date.getFullYear() +
-		date.getMonth() +
+		(date.getMonth() + 1) +
 		date.getDate() +
 		" " +
 		date.getHours() +
-		date.getMinutes() +
-		date.getSeconds()
+		date.getMinutes()
+		".osp"
 	);
 }
 
-function importPlaylist(){
-	//TODO add import/export playlist (with UI).
+function importPlaylist(data){
+	$.each(JSON.parse(data), function(k, v){
+		is404(v.music, function(tested){
+			if(tested){
+				addToPlaylist(v.id, v.title, v.artist);
+				return;
+			}
+
+			queue.push(v);
+		});
+	});
+}
+
+function getEmbedString(){
+	return EMBED_TEMPLATE.replace("{%src}", EMBED_URL + $.param(queue));
 }

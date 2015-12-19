@@ -16,6 +16,7 @@
 
 		<script src="/resources/js/jquery-2.1.4.min.js"></script>
 		<script src="/resources/js/bootstrap.min.js"></script>
+		<script src="/resources/js/bootstrap-filestyle.min.js"></script>
 		<script src="/resources/js/bootstrap-slider.min.js"></script>
 		<script src="/resources/js/bootstrap-toggle.min.js"></script>
 		<script src="/resources/js/download.js"></script>
@@ -199,6 +200,28 @@
 						<div class="setting-item">
 							<h3>No up/down toggle animations (Experimental)</h3>
 							<input id="noani" type="checkbox" checked data-toggle="toggle">
+						</div>
+						<div class="setting-item">
+							<h3>Export / Import your playlist</h3>
+							<div class="form-inline">
+								<input type="file" class="filestyle" data-input="false" data-iconName="fa fa-upload" data-buttonText="Import">
+
+								<button type="button" class="btn btn-info" onclick="exportPlaylist()">
+									<span class="fa fa-download"></span>
+									Export
+								</button>
+							</div>
+						</div>
+						<div class="setting-item">
+							<h3>Embed your playlist!<h3>
+							<div class="input-group col-lg-4">
+								<input type="text" id="embed-target" class="form-control" disabled>
+								<span class="input-group-btn">
+									<button class="btn btn-info" onclick="$('#embed-target').val(getEmbedString())">
+										<span class="fa fa-share-alt"></span>
+									</button>
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
