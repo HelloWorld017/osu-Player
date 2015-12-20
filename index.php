@@ -214,6 +214,27 @@
 						</div>
 						<div class="setting-item">
 							<h3>Embed your playlist!<h3>
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="repeat-embed">
+									Repeat
+								</label>
+							</div>
+
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="random-embed">
+									Random
+								</label>
+							</div>
+
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="autoplay-embed">
+									Autoplay
+								</label>
+							</div>
+
 							<div class="input-group col-lg-4">
 								<input type="text" id="embed-target" class="form-control" disabled>
 								<span class="input-group-btn">

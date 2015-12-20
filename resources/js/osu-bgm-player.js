@@ -747,7 +747,7 @@ function exportPlaylist(){
 		date.getDate() +
 		" " +
 		date.getHours() +
-		date.getMinutes()
+		date.getMinutes() +
 		".osp"
 	);
 }
@@ -766,5 +766,15 @@ function importPlaylist(data){
 }
 
 function getEmbedString(){
-	return EMBED_TEMPLATE.replace("{%src}", EMBED_URL + $.param(queue));
+	var data = {};
+
+	data.queue = $.map(queue, function(v){
+		return v.id;
+	}).join(',');
+
+	data.repeat = $('#repeat-embed').val();
+	data.random = $('#random-embed').val();
+	data.autoplay = $('#autoplay-embed').val();
+
+	return EMBED_TEMPLATE.replace("{%src}", EMBED_URL + $.param(data));
 }
