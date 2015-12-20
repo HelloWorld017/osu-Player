@@ -19,6 +19,9 @@ var currentArtist = null;
 var progress = null;
 var dialog = null;
 var bgPict = null;
+var dropzoneModal = null;
+var dropzone = null;
+var upload = null;
 
 var toggles = {
 	repeat: null,
@@ -91,6 +94,9 @@ $(document).ready(function(){
 	currentArtist = $('#current-artist');
 	dialog = $('#playlist-dialog');
 	bgPict = $('#bg-pict');
+	dropzoneModal = $('#dropzone-dialog');
+	dropzone = $('.dropzone');
+	upload = $('#upload');
 
 	toggles.repeat = $('#toggle-repeat');
 	toggles.random = $('#toggle-random');
@@ -145,6 +151,23 @@ $(document).ready(function(){
 			scrollAnimating = false;
 		}
 	});
+
+	dropzone.on('dragover', function(e){
+		dropzone.addClass('over');
+		e.preventDefault();
+	}).on('dragleave', function(e){
+		dropzone.removeClass('over');
+		e.preventDefault();
+	}).on('drop', function(e){
+		dropzone.removeClass('over');
+		importWithFile((e.originalEvent.target.files || e.originalEvent.dataTransfer.files)[0]);
+		e.preventDefault();
+		return false;
+	});
+
+	upload.on('change', function(){
+		importWithFile(upload[0].files[0]);
+	});
 });
 
 function Lyric(id, timing, lyric){
@@ -164,6 +187,16 @@ Lyric.prototype = {
 		return this.id;
 	}
 };
+
+function importWithFile(file){
+	var reader = new FileReader();
+	reader.onloadend = function(){
+		importPlaylist(reader.result);
+		dropzoneModal.modal('hide');
+	}
+
+	reader.readAsText(file);
+}
 
 function getTimeStamp(time){
 	var sec = time % 60;
@@ -753,6 +786,8 @@ function exportPlaylist(){
 }
 
 function importPlaylist(data){
+	queue = [];
+
 	$.each(JSON.parse(data), function(k, v){
 		is404(v.music, function(tested){
 			if(tested){
@@ -760,6 +795,8 @@ function importPlaylist(data){
 				return;
 			}
 
+			var view = addToPlaylistPlaceholder(v.id);
+			addToPlaylistFromTemplate(view, v);
 			queue.push(v);
 		});
 	});
