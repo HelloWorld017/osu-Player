@@ -16,7 +16,6 @@
 
 		<script src="/resources/js/jquery-2.1.4.min.js"></script>
 		<script src="/resources/js/bootstrap.min.js"></script>
-		<script src="/resources/js/bootstrap-filestyle.min.js"></script>
 		<script src="/resources/js/bootstrap-slider.min.js"></script>
 		<script src="/resources/js/bootstrap-toggle.min.js"></script>
 		<script src="/resources/js/download.js"></script>
@@ -66,12 +65,41 @@
 									Download Image
 								</button>
 
-								<button class="list-group-item list-group-item-danger" onclick="removeFromPlaylist($(this).parent().data('id'));">
+								<button class="list-group-item list-group-item-danger" onclick="removeFromPlaylist($(this).parent().data('id'));" data-target="#playlist-dialog" data-dismiss="modal">
 									<span class="fa fa-trash"></span>
 									Remove
 								</button>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="dropzone-dialog" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span class="fa fa-times"></span>
+						</button>
+
+						<h4>
+							Import your playlist
+						</h4>
+					</div>
+
+					<div class="modal-body">
+						<label for="upload">Click here :</label>
+						<input id="upload" type="file" name="file" style="display: inline">
+
+						<form id="upload-form" class="dropzone">
+							<div id="dropzone">
+								<div id="info-dropzone">
+									or drag n drop to here!
+								</div>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -204,7 +232,10 @@
 						<div class="setting-item">
 							<h3>Export / Import your playlist</h3>
 							<div class="form-inline">
-								<input type="file" class="filestyle" data-input="false" data-iconName="fa fa-upload" data-buttonText="Import">
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#dropzone-dialog">
+									<span class="fa fa-upload"></span>
+									Import
+								</button>
 
 								<button type="button" class="btn btn-info" onclick="exportPlaylist()">
 									<span class="fa fa-download"></span>

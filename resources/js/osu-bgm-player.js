@@ -809,9 +809,9 @@ function getEmbedString(){
 		return v.id;
 	}).join(',');
 
-	data.repeat = $('#repeat-embed').val();
-	data.random = $('#random-embed').val();
-	data.autoplay = $('#autoplay-embed').val();
+	data.repeat = $('#repeat-embed').is(':checked');
+	data.random = $('#random-embed').is(':checked');
+	data.autoplay = $('#autoplay-embed').is(':checked');
 
 	return EMBED_TEMPLATE.replace("{%src}", EMBED_URL + $.param(data));
 }
