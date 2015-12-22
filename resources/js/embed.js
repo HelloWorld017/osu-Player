@@ -85,7 +85,7 @@ $(document).ready(function(){
 	if(!prefs.autoplay) return;
 
 	var playIntervalId = setInterval(function(){
-		if(queue.length !== 0){
+		if(queue.length !== dataQueue.length){
 			clearInterval(playIntervalId);
 			play();
 		}

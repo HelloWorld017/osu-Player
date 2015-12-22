@@ -813,5 +813,5 @@ function getEmbedString(){
 	data.random = $('#random-embed').is(':checked');
 	data.autoplay = $('#autoplay-embed').is(':checked');
 
-	return EMBED_TEMPLATE.replace("{%src}", EMBED_URL + $.param(data));
+	return EMBED_TEMPLATE.replace("{%src}", EMBED_URL + $.param(data)).replace("&", "&amp;");
 }
