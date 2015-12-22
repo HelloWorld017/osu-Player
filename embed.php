@@ -55,6 +55,10 @@
 				font-family: '나눔바른고딕', 'NanumBarunGothic', '나눔고딕', 'NanumGothic', 'InterparkGothic', '인터파크고딕', 'Open Sans', '함초롬돋움', '서울남산체', 'Noto Sans Korean', '본고딕', 'Apple SD Gothic Neo', 'KoPubDotum Medium', '맑은고딕', 'Malgun Gothic', arial, sans-serif;
 			}
 
+			.row{
+				margin: 0;
+			}
+
 			#title-contents{
 				overflow: hidden;
 				white-space: nowrap;

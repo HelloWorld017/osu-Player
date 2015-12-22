@@ -41,8 +41,27 @@ var preloadAudio = {
 	id: null
 };
 
+const DIRECTION_LEFT = -1;
+const DIRECTION_RIGHT = 1;
+
 var intervalId = null;
-var currentScroll = 0;
+var isScrolling = false;
+var currentDirection = DIRECTION_LEFT;
+var scrollPreset = {};
+
+scrollPreset[DIRECTION_LEFT] = function(){
+	return {
+		target: 0,
+		duration: 1000
+	};
+};
+
+scrollPreset[DIRECTION_RIGHT] = function(el){
+	return {
+		target: el.scrollWidth - el.clientWidth,
+		duration: 20000
+	};
+}
 
 $(document).ready(function(){
 	playpause = $('#playpause');
@@ -76,17 +95,29 @@ $(document).ready(function(){
 		clearInterval(intervalId);
 	}
 
-	intervalId = setInterval(makeItFlow, 1000);
+	intervalId = setInterval(checkFlow, 1000);
 });
 
 function makeItFlow(){
-	if(currentTitle[0].clientWidth < currentTitle[0].scrollWidth){
-		currentScroll += 5;
-		if(currentScroll > currentTitle[0].scrollWidth){
-			currentScroll = - currentTitle[0].scrollWidth;
-		}
+	isScrolling = true;
+	currentDirection = -currentDirection;
 
-		currentTitle.scrollLeft(currentScroll);
+	var scroll = scrollPreset[currentDirection](currentTitle[0]);
+
+	currentTitle.animate({
+		scrollLeft: scroll.target
+	}, {
+		duration: scroll.duration,
+		complete: function(){
+			isScrolling = false;
+			makeItFlow();
+		}
+	});
+}
+
+function checkFlow(){
+	if(currentTitle[0].clientWidth < currentTitle[0].scrollWidth && !isScrolling){
+		makeItFlow();
 	}
 }
 

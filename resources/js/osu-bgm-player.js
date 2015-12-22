@@ -5,7 +5,7 @@ const LYRIC_URL = "/load_lyric.php?id="
 const IMG_URL = "//b.ppy.sh/thumb/{0}l.jpg"
 
 const EMBED_URL = "//bgm.khinenw.tk/embed.php?";
-const EMBED_TEMPLATE = '<iframe src="{%src}" width="200" height="150" style="border: none"></iframe>';
+const EMBED_TEMPLATE = '<iframe src="{%src}" width="310" height="26" style="border: none"></iframe>';
 
 var queue = [];
 var pointer = 0;
