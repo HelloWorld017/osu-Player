@@ -4,6 +4,8 @@ var section = null;
 var undergroundSection = null;
 var centerProgress = null;
 var progressSlider = null;
+var exportList = null;
+var importDiag = null;
 
 var isDesktop = null;
 
@@ -12,6 +14,8 @@ $(document).ready(function(){
 	section = $('section');
 	centerProgress = $('.center-progress');
 	progressSlider = $('.slider');
+	exportList = $('#export-list');
+	importDiag = $('#import-dialog');
 
 	undergroundTabs = undergroundSection.children('div');
 	groundTabs = section.children('#contents, #playlist-aside');
@@ -41,5 +45,20 @@ function resize(){
 		centerProgress.prepend(progressSlider);
 		centerProgress.prepend(progress);
 		isDesktop = true;
+	}
+}
+
+function openImportDiag(){
+	if(storageAvailable('localStorage')){
+		var playlist = JSON.parse(window.localStorage.getItem('playlist'));
+		exportList.clear();
+		playlist.forEach(function(k){
+			exportList.append($(document.createElement('li')).addClass('list-group-item').attr('data-id', k).text(k).on('click', function(){
+				importWithoutFile(k);
+			}));
+		});
+		importDiag.modal();
+	}else{
+		alert('Storage is not available!');
 	}
 }

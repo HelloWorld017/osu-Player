@@ -15,6 +15,7 @@
 		<link rel="shortcut icon" href="/resources/favicon.ico"/>
 
 		<script src="/resources/js/jquery-2.1.4.min.js"></script>
+		<script src="/resources/js/async.min.js"></script>
 		<script src="/resources/js/bootstrap.min.js"></script>
 		<script src="/resources/js/bootstrap-slider.min.js"></script>
 		<script src="/resources/js/bootstrap-toggle.min.js"></script>
@@ -48,6 +49,11 @@
 								<button class="list-group-item list-group-item-success" onclick="playlistDown($(this).parent().data('id'));">
 									<span class="fa fa-chevron-down"></span>
 									Down
+								</button>
+
+								<button class="list-group-item list-group-item-success" onclick="playThis($(this).parent().data('id'));">
+									<span class="fa fa-play-circle-o"></span>
+									Play This
 								</button>
 
 								<button class="list-group-item list-group-item-info" onclick="downloadBeatmap($(this).parent().data('id'));">
@@ -105,6 +111,28 @@
 			</div>
 		</div>
 
+		<div id="import-dialog" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span class="fa fa-times"></span>
+						</button>
+
+						<h4>
+							Import your playlist
+						</h4>
+					</div>
+
+					<div class="modal-body">
+						<ul class="list-group" id="export-list">
+
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<nav class="navbar navbar-inverse bg-main" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -120,7 +148,7 @@
 							<input name="s" type="hidden" value="title">
 
 							<span class="input-group-btn">
-								<button type="button" class="btn bg-transparent nav-toggle">
+								<button type="submit" class="btn bg-transparent nav-toggle">
 		                        	<span class="fa fa-search bright-font"></span>
 		                    	</button>
 							</span>
@@ -222,6 +250,10 @@
 							<input id="nopic" type="checkbox" checked data-toggle="toggle">
 						</div>
 						<div class="setting-item">
+							<h3>No Audio Preloading</h3>
+							<input id="nopld" type="checkbox" checked data-toggle="toggle">
+						</div>
+						<div class="setting-item">
 							<h3>No syncing lyrics</h3>
 							<input id="nolrc" type="checkbox" checked data-toggle="toggle">
 						</div>
@@ -238,6 +270,24 @@
 								</button>
 
 								<button type="button" class="btn btn-info" onclick="exportPlaylist()">
+									<span class="fa fa-download"></span>
+									Export
+								</button>
+
+								<button type="button" class="btn btn-info" onclick="exportToM3U8()">
+									<span class="fa fa-download"></span>
+									Export
+								</button>
+							</div>
+
+							<h3>Export / Import without download</h3>
+							<div class="form-inline">
+								<button type="button" class="btn btn-default" onclick="openImportDiag()">
+									<span class="fa fa-upload"></span>
+									Import
+								</button>
+
+								<button type="button" class="btn btn-info" onclick="exportWithoutFile()">
 									<span class="fa fa-download"></span>
 									Export
 								</button>

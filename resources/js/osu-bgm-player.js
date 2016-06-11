@@ -1,9 +1,10 @@
 //const INFO_URL = "http://bloodcat.com/osu/";
-const INFO_URL = "/search_bgm.php"
+const INFO_URL = "/search_bgm.php";
 const BGM_URL = "load_bgm.php?id=";
-const LYRIC_URL = "/load_lyric.php?id="
-const IMG_URL = "//b.ppy.sh/thumb/{0}l.jpg"
+const LYRIC_URL = "/load_lyric.php?id=";
+const IMG_URL = "//b.ppy.sh/thumb/{0}l.jpg";
 
+const MUSIC_BASE = "https://bgm.khinenw.tk/";
 const EMBED_URL = "//bgm.khinenw.tk/embed.php?";
 const EMBED_TEMPLATE = '<iframe src="{%src}" width="310" height="26" style="border: none"></iframe>';
 
@@ -32,15 +33,17 @@ var toggles = {
 var settings = {
 	nopic: null,
 	noani: null,
-	nolrc: null
-}
+	nolrc: null,
+	nopld: null
+};
 
 var prefs = {
 	random: false,
 	repeat: false,
 	nopic: false,
 	noani: false,
-	nolrc: false
+	nolrc: false,
+	nopld: false
 };
 
 var undergroundTop = null;
@@ -105,12 +108,14 @@ $(document).ready(function(){
 	settings.nopic = $('#nopic');
 	settings.noani = $('#noani');
 	settings.nolrc = $('#nolrc');
+	settings.nopld = $('#nopld');
 
 	prefs.repeat = getFlag('repeat');
 	prefs.random = getFlag('random');
 	prefs.nopic = getFlag('nopic');
 	prefs.noani = getFlag('noani');
 	prefs.nolrc = getFlag('nolrc');
+	prefs.nopld = getFlag('nopld');
 
 	$.each(toggles, function(k, v){
 		toggleFlag(k, true);
@@ -170,6 +175,10 @@ $(document).ready(function(){
 	});
 });
 
+if(window.localStorage.getItem('playlist') === undefined){
+	window.localStorage.setItem('playlist', '{}');
+}
+
 function Lyric(id, timing, lyric){
 	this.id = id;
 	this.timing = timing;
@@ -188,12 +197,43 @@ Lyric.prototype = {
 	}
 };
 
+Number.prototype.zfill = function(repeat){
+	var num = this.toString();
+	if(num.length >= repeat) return num;
+
+	var zeros = '';
+	for(var i = 0; i < repeat - num.length; i++){
+		zeros = zeros + '0';
+	}
+
+	return zeros + num;
+};
+
+Date.prototype.format = function(format){
+	var that = this;
+
+	return format.replace(/(yyyy|yy|MM|dd|hh|HH|mm|ss|a)/g, function(type){
+		switch(type){
+			case 'yyyy': return that.getFullYear();
+			case 'yy': return (that.getFullYear() % 100).zfill(2);
+			case 'MM': return (that.getMonth() + 1).zfill(2);
+			case 'dd': return (that.getDate()).zfill(2);
+			case 'hh': return (that.getHours() % 12).zfill(2);
+			case 'HH': return (that.getHours()).zfill(2);
+			case 'mm': return (that.getMinutes()).zfill(2);
+			case 'ss': return (that.getSeconds()).zfill(2);
+			case 'a': return (that.getHours() >= 12 ? 'PM':'AM');
+				return type;
+		}
+	});
+};
+
 function importWithFile(file){
 	var reader = new FileReader();
 	reader.onloadend = function(){
 		importPlaylist(reader.result);
 		dropzoneModal.modal('hide');
-	}
+	};
 
 	reader.readAsText(file);
 }
@@ -273,24 +313,30 @@ function toggleUnderground(){
 }
 
 function prevTrack(){
-	if(!audio.paused) stop();
+	if(!prefs.nopld && !audio.paused) stop();
 
 	if(queue.length <= 0) return;
 
 	var prevPointer = getPrevTrack();
 
-	if(prevPointer === null) return;
+	if(prevPointer === null){
+		if(prefs.nopld) stop();
+		return;
+	}
 	loadTrack(prevPointer);
 }
 
 function nextTrack(){
-	if(!audio.paused) stop();
+	if(!prefs.nopld && !audio.paused) stop();
 
 	if(queue.length <= 0) return;
 
 	var nextPointer = getNextTrack();
 
-	if(nextPointer === null) return;
+	if(nextPointer === null){
+		if(prefs.nopld) stop();
+		return;
+	}
 	loadTrack(nextPointer);
 }
 
@@ -332,7 +378,7 @@ function getRandomTrack(){
 function loadTrack(newPointer){
 	pointer = newPointer;
 
-	if(preloadAudio.id !== queue[pointer].id){
+	if(prefs.nopld || preloadAudio.id !== queue[pointer].id){
 		audio.src = queue[pointer].music;
 	}else{
 		audio = attachListenerToAudio(preloadAudio.audio);
@@ -342,7 +388,7 @@ function loadTrack(newPointer){
 		progress.slider('setAttribute', 'max', Math.round(audio.duration));
 		freeScroll = false;
 	}
-	play();
+	if(!prefs.nopld) play();
 }
 
 function loadLyric(){
@@ -589,7 +635,7 @@ function addToPlaylistPlaceholder(id){
 	listView.data('id', id);
 
 	listView.on('click', function(){
-		$('#playlist-dialog-title')[0].innerHTML = queue[indexOfId($(this).data('id'))].title;
+		$('#playlist-dialog-title')[0].innerHTML = (queue[indexOfId($(this).data('id'))] || {}).title;
 		dialog.html($(dialog).html());
 		$('#playlist-dialog-content div').data('id', $(this).data('id'));
 		dialog.modal();
@@ -733,7 +779,7 @@ function downloadFromURL(url, name){
 	x.responseType = 'blob';
 	x.onload = function(){
 		download(x.response, name);
-	}
+	};
 	x.send();
 }
 
@@ -770,18 +816,9 @@ function removeFromPlaylist(id){
 }
 
 function exportPlaylist(){
-	var date = new Date();
 	download(
 		JSON.stringify(queue),
-
-		"playlist-" +
-		date.getFullYear() +
-		(date.getMonth() + 1) +
-		date.getDate() +
-		" " +
-		date.getHours() +
-		date.getMinutes() +
-		".osp"
+		(new Date()).format('playlist-yyyy-MM-dd HHmm.osp')
 	);
 }
 
@@ -800,6 +837,66 @@ function importPlaylist(data){
 			queue.push(v);
 		});
 	});
+}
+
+function importWithoutFile(key){
+	importPlaylist(window.localStorage.getItem(key));
+}
+
+function exportWithoutFile(){
+	if(!storageAvailable('localStorage')){
+		alert('Storage is not available!');
+		return;
+	}
+
+	var date = (new Date()).format('playlist-yyyy-MM-dd HHmm');
+	var playlists = JSON.parse(window.localStorage.getItem('playlist'));
+	playlists.push(date);
+	window.localStorage.setItem('playlist', playlists);
+	window.localStorage.setItem(date, JSON.stringify(queue));
+}
+
+function exportToM3U8(){
+	async.forEachOf(queue, function(v, k, cb){
+		var testAudio = document.createElement('audio');
+		testAudio.src = v;
+		$(testAudio).on('canplaythrough', function(e){
+			queue[k].duration = e.currentTarget.duration;
+			testAudio.src = "";
+			testAudio.load();
+			cb();
+		});
+	}, function(){
+		var m3u8 = '#EXTM38';
+
+		queue.forEach(function(v){
+			m3u8 += '#EXTINF:' + v.duration + ', ' + v.artist + '-' + v.title + '\n';
+			m3u8 += MUSIC_BASE + v.music + '\n\n';
+		});
+
+		download(
+			m3u8,
+			(new Date()).format('playlist-yyyy-MM-dd HHmm.m3u8')
+		);
+	});
+}
+
+function storageAvailable(type) {
+	try {
+		var storage = window[type],
+			x = '__storage_test__';
+		storage.setItem(x, x);
+		storage.removeItem(x);
+		return true;
+	}
+	catch(e) {
+		return false;
+	}
+}
+
+function playThis(id){
+	var idPointer = indexOfId(id);
+	loadTrack(idPointer === -1 ? pointer : idPointer);
 }
 
 function getEmbedString(){
