@@ -177,7 +177,7 @@ $(document).ready(function(){
 
 if(storageAvailable('localStorage')){
 	if(!window.localStorage.getItem('playlist')){
-		window.localStorage.setItem('playlist', '{}');
+		window.localStorage.setItem('playlist', '[]');
 	}
 }
 
@@ -224,7 +224,7 @@ Date.prototype.format = function(format){
 			case 'HH': return (that.getHours()).zfill(2);
 			case 'mm': return (that.getMinutes()).zfill(2);
 			case 'ss': return (that.getSeconds()).zfill(2);
-			case 'a': return (that.getHours() >= 12 ? 'PM':'AM');
+			case 'aa': return (that.getHours() >= 12 ? 'PM':'AM');
 				return type;
 		}
 	});
@@ -854,7 +854,7 @@ function exportWithoutFile(){
 	var date = (new Date()).format('playlist-yyyy-MM-dd HHmm');
 	var playlists = JSON.parse(window.localStorage.getItem('playlist'));
 	playlists.push(date);
-	window.localStorage.setItem('playlist', playlists);
+	window.localStorage.setItem('playlist', JSON.stringify(playlists));
 	window.localStorage.setItem(date, JSON.stringify(queue));
 }
 

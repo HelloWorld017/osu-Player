@@ -125,9 +125,9 @@
 					</div>
 
 					<div class="modal-body">
-						<ul class="list-group" id="export-list">
+						<div class="list-group" id="export-list">
 
-						</ul>
+						</div>
 					</div>
 				</div>
 			</div>

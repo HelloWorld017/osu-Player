@@ -53,7 +53,7 @@ function openImportDiag(){
 		var playlist = JSON.parse(window.localStorage.getItem('playlist'));
 		exportList.empty();
 		playlist.forEach(function(k){
-			exportList.append($(document.createElement('li')).addClass('list-group-item').attr('data-id', k).text(k).on('click', function(){
+			exportList.append($(document.createElement('a')).addClass('list-group-item').attr('data-id', k).text(k).on('click', function(){
 				importWithoutFile(k);
 			}));
 		});
