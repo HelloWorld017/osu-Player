@@ -276,7 +276,7 @@
 
 								<button type="button" class="btn btn-info" onclick="exportToM3U8()">
 									<span class="fa fa-download"></span>
-									Export
+									Export As M3U8
 								</button>
 							</div>
 

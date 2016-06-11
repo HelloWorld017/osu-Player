@@ -175,8 +175,10 @@ $(document).ready(function(){
 	});
 });
 
-if(window.localStorage.getItem('playlist') === undefined){
-	window.localStorage.setItem('playlist', '{}');
+if(storageAvailable('localStorage')){
+	if(!window.localStorage.getItem('playlist')){
+		window.localStorage.setItem('playlist', '{}');
+	}
 }
 
 function Lyric(id, timing, lyric){
@@ -859,7 +861,7 @@ function exportWithoutFile(){
 function exportToM3U8(){
 	async.forEachOf(queue, function(v, k, cb){
 		var testAudio = document.createElement('audio');
-		testAudio.src = v;
+		testAudio.src = v.music;
 		$(testAudio).on('canplaythrough', function(e){
 			queue[k].duration = e.currentTarget.duration;
 			testAudio.src = "";
@@ -867,10 +869,10 @@ function exportToM3U8(){
 			cb();
 		});
 	}, function(){
-		var m3u8 = '#EXTM38';
+		var m3u8 = '#EXTM3U\n';
 
 		queue.forEach(function(v){
-			m3u8 += '#EXTINF:' + v.duration + ', ' + v.artist + '-' + v.title + '\n';
+			m3u8 += '#EXTINF:' + Math.round(v.duration) + ', ' + v.artist + '-' + v.title + '\n';
 			m3u8 += MUSIC_BASE + v.music + '\n\n';
 		});
 
