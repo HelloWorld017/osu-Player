@@ -1,0 +1,30 @@
+{
+  "name": "osu-player",
+  "description": "An web-based music player which plays music loaded from osu! song database",
+  "main": "src/index.js",
+  "authors": [
+    "HelloWorld017 <deu07115@gmail.com>"
+  ],
+  "license": "GPL-3",
+  "keywords": [
+    "osu!",
+    "music",
+    "player",
+    "alsong"
+  ],
+  "homepage": "https://github.com/HelloWorld017/osu-Player",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "NanumBarunGothic": "^1.0.0",
+    "jquery": "^3.1.1",
+    "async": "^2.0.1",
+    "bootstrap-toggle": "^2.2.2",
+    "font-awesome": "^4.6.3"
+  }
+}

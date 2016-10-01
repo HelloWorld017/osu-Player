@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Welcome to osu!Player</title>
+		<meta charset="utf-8"/>
+		<meta name="description" content="osu!Player">
+		<meta name="author" content="Khinenw">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+
+		<link rel="stylesheet" type="text/css" href="/bootstrap/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="/font-awesome/css/font-awesome.min.css">
+		<link rel="shortcut icon" href="/favicon.ico"/>
+
+		<script src="/jquery/dist/jquery.min.js"></script>
+		<script src="/resources/js/embed.js"></script>
+
+		<style>
+			a{
+				color: #00C0A0;
+			}
+
+			a:hover, a:active, a:focus, a:visited{
+				color: #16A085;
+			}
+
+			.contents{
+				background: #222f3d;
+				border: solid 3px #222f3d;
+				border-radius: 5px;
+				font-family: 'Nanum Barun Gothic', sans-serif;
+			}
+
+			.row{
+				margin: 0;
+			}
+
+			#title-contents{
+				overflow: hidden;
+				white-space: nowrap;
+			}
+
+			#song-contents{
+				color: #00C0A0;
+				margin-left: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="contents">
+			<div class="row">
+				<div id="title-contents" class="col-xs-8">
+					<span id="song-contents">
+					</span>
+				</div>
+
+				<div class="col-xs-1">
+					<a id="prev" href="javascript:prevTrack()">
+						<span class="fa fa-chevron-left"></span>
+					</a>
+				</div>
+
+				<div class="col-xs-1">
+					<a id="playpause" href="javascript:play()">
+						<span class="fa fa-play-circle-o"></span>
+					</a>
+				</div>
+
+				<div class="col-xs-1">
+					<a id="next" href="javascript:nextTrack()">
+						<span class="fa fa-chevron-right"></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
