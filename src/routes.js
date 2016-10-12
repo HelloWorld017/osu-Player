@@ -56,8 +56,7 @@ router.get('/search/', (req, res, next) => {
 		uri: 'https://bloodcat.com/osu/',
 		qs: {
 			mod: 'json',
-			m: 's',
-			s: 'title',
+			c: 's',
 			q: req.query.q.slice(0, 100)
 		}
 	}, (err, resp, body) => {
