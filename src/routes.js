@@ -50,7 +50,7 @@ router.get('/embed.php', (req, res, next) => {
 	res.render('embed');
 });
 
-router.get('/search/', (req, res, next) => {
+router.get('/search(_bgm.php)?', (req, res, next) => {
 	if(typeof req.query.q !== 'string') return next(new Error("Invalid Data!"));
 	rp({
 		uri: 'https://bloodcat.com/osu/',
