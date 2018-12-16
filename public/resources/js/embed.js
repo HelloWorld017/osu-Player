@@ -20,8 +20,8 @@ $.parseParams = function(query) {
 };
 })(jQuery);
 
-const BGM_URL = "load_bgm.php?id=";
-const INFO_URL = "/search_bgm.php"
+const BGM_URL = "/load/";
+const INFO_URL = "/search/"
 
 var queue = [];
 var pointer = 0;
@@ -85,11 +85,11 @@ $(document).ready(function(){
 	if(!prefs.autoplay) return;
 
 	var playIntervalId = setInterval(function(){
-		if(queue.length !== dataQueue.length){
+		if(queue.filter((v) => v).length === dataQueue.length){
 			clearInterval(playIntervalId);
 			play();
 		}
-	});
+	}, 1000);
 
 	if(intervalId){
 		clearInterval(intervalId);
@@ -284,12 +284,13 @@ function addToPlaylist(id, pointer){
 	})(function(meta){
 		$.ajax({
 			url: BGM_URL + id,
-			success: function(data){
-				var jsonData = JSON.parse(data);
+			success: function(_data){
+				var jsonData = _data;
+				if(typeof _data === 'string') jsonData = JSON.parse(_data);
 
 				var data = {
 					id: id,
-					music: 'musics/' + jsonData['audio'],
+					music: '/' + jsonData['audio'],
 					title: meta.title,
 					artist: meta.artist
 				};

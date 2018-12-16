@@ -13,6 +13,10 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use((req, res, next) => {
+	res.set('Access-Control-Allow-Origin', '*');
+	next();
+});
 app.use(express.static('./public/'));
 app.use(express.static('./bower_components/'));
 app.use(express.static('./musics/'));
